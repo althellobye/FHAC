@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FHAC · 团队协作看板</title>
+    <title>FHAC · 團隊協作看板</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ===== 全局重置 & 布局 ===== */
+        /* ===== 全局重置 & 佈局 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -29,7 +29,7 @@
             padding: 24px 28px 40px;
         }
 
-        /* ===== 头部 ===== */
+        /* ===== 頭部 ===== */
         .app-header {
             display: flex;
             flex-wrap: wrap;
@@ -112,7 +112,7 @@
             color: #856404;
         }
 
-        /* ===== 模式切换 ===== */
+        /* ===== 模式切換 ===== */
         .mode-tabs {
             display: flex;
             gap: 12px;
@@ -140,7 +140,7 @@
             margin-right: 8px;
         }
 
-        /* ===== 部门切换 ===== */
+        /* ===== 部門切換（顯示數量） ===== */
         .dept-tabs {
             display: flex;
             flex-wrap: wrap;
@@ -159,11 +159,24 @@
             color: #1f334a;
             cursor: pointer;
             transition: 0.1s;
+            position: relative;
+        }
+        .dept-tab .count-badge {
+            background: #2d6ff7;
+            color: white;
+            border-radius: 20px;
+            padding: 0 8px;
+            font-size: 0.7rem;
+            margin-left: 6px;
+            font-weight: 600;
         }
         .dept-tab.active {
             background: #1f334a;
             border-color: #1f334a;
             color: white;
+        }
+        .dept-tab.active .count-badge {
+            background: rgba(255,255,255,0.3);
         }
         .dept-tab:hover {
             background: #e9eff7;
@@ -172,7 +185,7 @@
             background: #142433;
         }
 
-        /* ===== 统计 & 卡片 ===== */
+        /* ===== 統計 & 卡片 ===== */
         .summary-stats {
             background: #f8faff;
             padding: 12px 20px;
@@ -189,7 +202,7 @@
         }
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 18px;
             margin-top: 10px;
         }
@@ -247,19 +260,28 @@
             border-top: 1px solid #f0f4fa;
             padding-top: 10px;
         }
-        .delete-btn {
+        .card-actions button {
             background: transparent;
             border: none;
-            color: #b0c0d0;
             cursor: pointer;
-            font-size: 0.9rem;
-            padding: 2px 8px;
+            font-size: 0.85rem;
+            padding: 4px 12px;
             border-radius: 30px;
             transition: 0.1s;
+        }
+        .delete-btn {
+            color: #b0c0d0;
         }
         .delete-btn:hover {
             background: #fee9e9;
             color: #b33;
+        }
+        .edit-btn {
+            color: #6b8bb0;
+        }
+        .edit-btn:hover {
+            background: #e9eff7;
+            color: #1f4a7a;
         }
         .add-btn {
             display: inline-flex;
@@ -286,10 +308,10 @@
             flex-wrap: wrap;
         }
 
-        /* ===== 工作进度 ===== */
+        /* ===== 工作進度 ===== */
         .work-progress-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 18px;
             margin-top: 10px;
         }
@@ -311,22 +333,15 @@
             font-size: 0.8rem;
             color: #3f5877;
         }
+        .work-card .card-actions {
+            margin-top: 10px;
+            padding-top: 8px;
+        }
         .hidden {
             display: none !important;
         }
-        .text-muted {
-            color: #6f85a0;
-        }
-        .flex {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .mt-2 {
-            margin-top: 12px;
-        }
 
-        /* ===== 模态框 ===== */
+        /* ===== 模態框 ===== */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -349,7 +364,7 @@
         }
         .modal-box {
             background: white;
-            max-width: 420px;
+            max-width: 440px;
             width: 90%;
             padding: 28px 30px;
             border-radius: 40px;
@@ -398,18 +413,11 @@
         }
 
         @media (max-width: 600px) {
-            .app-container {
-                padding: 16px;
-            }
-            .token-section {
-                flex-wrap: wrap;
-            }
-            .token-section input {
-                width: 100%;
-            }
+            .app-container { padding: 16px; }
+            .token-section { flex-wrap: wrap; }
+            .token-section input { width: 100%; }
         }
 
-        /* 加载占位 */
         .loading-spinner {
             text-align: center;
             padding: 40px 0;
@@ -424,104 +432,104 @@
 </head>
 <body>
     <div class="app-container" id="app">
-        <!-- 头部 -->
+        <!-- 頭部 -->
         <div class="app-header">
             <div class="app-title">
-                FHAC <small>· 团队同步</small>
+                FHAC <small>· 團隊協作</small>
             </div>
             <div class="token-section">
                 <label><i class="fas fa-key"></i> Token</label>
                 <input type="text" id="tokenInput" placeholder="ghp_xxxxxxxx" />
-                <button id="loadTokenBtn"><i class="fas fa-sync-alt"></i> 加载数据</button>
-                <span class="token-status" id="tokenStatus"><i class="fas fa-spinner fa-pulse"></i> 未连接</span>
+                <button id="loadTokenBtn"><i class="fas fa-sync-alt"></i> 載入資料</button>
+                <span class="token-status" id="tokenStatus"><i class="fas fa-spinner fa-pulse"></i> 未連線</span>
             </div>
         </div>
 
-        <!-- 模式切换 -->
+        <!-- 模式切換 -->
         <div class="mode-tabs">
-            <button class="mode-tab active" data-mode="memo"><i class="fas fa-sticky-note"></i> 备忘录</button>
-            <button class="mode-tab" data-mode="progress"><i class="fas fa-chart-line"></i> 工作进度</button>
+            <button class="mode-tab active" data-mode="memo"><i class="fas fa-sticky-note"></i> 備忘錄</button>
+            <button class="mode-tab" data-mode="progress"><i class="fas fa-chart-line"></i> 工作進度</button>
         </div>
 
-        <!-- 备忘录区域 -->
+        <!-- 備忘錄區域 -->
         <div id="memoSection">
             <div class="dept-tabs" id="deptTabs"></div>
             <div class="dept-header">
-                <div class="summary-stats" id="deptSummary"><i class="fas fa-list-ul"></i> 总计 0 项</div>
-                <button class="add-btn" id="addMemoBtn"><i class="fas fa-plus-circle"></i> 新增项目</button>
+                <div class="summary-stats" id="deptSummary"><i class="fas fa-list-ul"></i> 總計 0 項</div>
+                <button class="add-btn" id="addMemoBtn"><i class="fas fa-plus-circle"></i> 新增項目</button>
             </div>
-            <div id="memoCardGrid"><div class="loading-spinner"><i class="fas fa-cloud-upload-alt"></i>点击「加载数据」同步</div></div>
+            <div id="memoCardGrid"><div class="loading-spinner"><i class="fas fa-cloud-upload-alt"></i>點擊「載入資料」同步</div></div>
         </div>
 
-        <!-- 工作进度区域 -->
+        <!-- 工作進度區域 -->
         <div id="progressSection" class="hidden">
             <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
-                <button class="add-btn" id="addProgressBtn"><i class="fas fa-plus-circle"></i> 添加工进度</button>
+                <button class="add-btn" id="addProgressBtn"><i class="fas fa-plus-circle"></i> 新增工作進度</button>
             </div>
-            <div id="progressGrid"><div class="loading-spinner"><i class="fas fa-cloud-upload-alt"></i>点击「加载数据」同步</div></div>
+            <div id="progressGrid"><div class="loading-spinner"><i class="fas fa-cloud-upload-alt"></i>點擊「載入資料」同步</div></div>
         </div>
     </div>
 
-    <!-- ===== 模态框：备忘录 ===== -->
+    <!-- ===== 模態框：備忘錄 新增/編輯 ===== -->
     <div class="modal-overlay" id="memoModal">
         <div class="modal-box">
-            <h3><i class="fas fa-pen"></i> 新增备忘项目</h3>
-            <label>项目名称</label>
+            <h3 id="memoModalTitle"><i class="fas fa-pen"></i> 新增備忘項目</h3>
+            <label>項目名稱</label>
             <input id="memoName" placeholder="例如：年度報告" />
-            <label>进度</label>
+            <label>進度</label>
             <select id="memoProgress">
-                <option value="未完成">未完成 (绿色)</option>
-                <option value="已完成">已完成 (红色)</option>
+                <option value="未完成">未完成 (綠色)</option>
+                <option value="已完成">已完成 (紅色)</option>
             </select>
-            <label>备注 <span style="color:#b33;font-weight:400;">(未完成时必填)</span></label>
-            <input id="memoNote" placeholder="备注内容" />
-            <label>状态</label>
+            <label>備註 <span style="color:#b33;font-weight:400;">(未完成時必填)</span></label>
+            <input id="memoNote" placeholder="備註內容" />
+            <label>狀態</label>
             <select id="memoStatus">
                 <option value="正常">正常</option>
-                <option value="紧急">紧急</option>
+                <option value="緊急">緊急</option>
             </select>
             <div class="modal-actions">
                 <button id="memoModalCancel">取消</button>
-                <button class="btn-primary" id="memoModalSave">保存</button>
+                <button class="btn-primary" id="memoModalSave">儲存</button>
             </div>
         </div>
     </div>
 
-    <!-- ===== 模态框：工作进度 ===== -->
+    <!-- ===== 模態框：工作進度 ===== -->
     <div class="modal-overlay" id="progressModal">
         <div class="modal-box">
-            <h3><i class="fas fa-tasks"></i> 新增工作进度</h3>
-            <label>部门</label>
+            <h3><i class="fas fa-tasks"></i> 新增工作進度</h3>
+            <label>部門</label>
             <select id="progressDept"></select>
-            <label>项目</label>
-            <input id="progressProject" placeholder="项目名称" />
-            <label>进度 (月份)</label>
+            <label>項目</label>
+            <input id="progressProject" placeholder="項目名稱" />
+            <label>進度 (月份)</label>
             <input id="progressMonth" type="month" />
-            <label>备注</label>
-            <input id="progressNote" placeholder="备注" />
+            <label>備註</label>
+            <input id="progressNote" placeholder="備註" />
             <div class="modal-actions">
                 <button id="progressModalCancel">取消</button>
-                <button class="btn-primary" id="progressModalSave">保存</button>
+                <button class="btn-primary" id="progressModalSave">儲存</button>
             </div>
         </div>
     </div>
 
-    <!-- ===== 模态框：删除 ===== -->
+    <!-- ===== 模態框：刪除 ===== -->
     <div class="modal-overlay" id="deleteModal">
         <div class="modal-box">
-            <h3><i class="fas fa-trash-alt"></i> 删除项目</h3>
-            <p style="color:#4d5f78;">请输入删除密码</p>
-            <input type="password" id="deletePassword" placeholder="密码" style="width:100%; padding:12px; border-radius:30px; border:1px solid #d4dce8;" />
+            <h3><i class="fas fa-trash-alt"></i> 刪除項目</h3>
+            <p style="color:#4d5f78;">請輸入刪除密碼</p>
+            <input type="password" id="deletePassword" placeholder="密碼" style="width:100%; padding:12px; border-radius:30px; border:1px solid #d4dce8;" />
             <div class="modal-actions">
                 <button id="deleteModalCancel">取消</button>
-                <button class="btn-primary" id="deleteModalConfirm">确认删除</button>
+                <button class="btn-primary" id="deleteModalConfirm">確認刪除</button>
             </div>
         </div>
     </div>
 
     <script>
         // ================================================================
-        //  配置
+        //  設定
         // ================================================================
         const GITHUB_USER = 'althellobye';
         const GITHUB_REPO = 'FHAC';
@@ -532,20 +540,17 @@
         const DELETE_PASSWORD = 'yuki';
 
         // ================================================================
-        //  全局状态
+        //  全域狀態
         // ================================================================
         let currentMode = 'memo';
         let currentDept = '總會';
-        let deleteTarget = null; // { type: 'memo'|'progress', id: string }
+        let deleteTarget = null;
+        let editTarget = null; // 編輯目標
+        let githubToken = '';
 
-        // 数据缓存
         let memoData = {};
         let progressData = [];
 
-        // 当前使用的token
-        let githubToken = '';
-
-        // DOM 引用
         const $ = (id) => document.getElementById(id);
         const tokenInput = $('tokenInput');
         const tokenStatus = $('tokenStatus');
@@ -561,12 +566,10 @@
         const addMemoBtn = $('addMemoBtn');
         const addProgressBtn = $('addProgressBtn');
 
-        // 模态框
         const memoModal = $('memoModal');
         const progressModal = $('progressModal');
         const deleteModal = $('deleteModal');
 
-        // 表单
         const memoName = $('memoName');
         const memoProgress = $('memoProgress');
         const memoNote = $('memoNote');
@@ -578,7 +581,7 @@
         const deletePassword = $('deletePassword');
 
         // ================================================================
-        //  工具函数
+        //  工具函數
         // ================================================================
         function genId() {
             return Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
@@ -589,8 +592,15 @@
             tokenStatus.className = 'token-status' + (type ? ' ' + type : '');
         }
 
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // ================================================================
-        //  GitHub API 读写
+        //  GitHub API 讀寫（修正編碼問題）
         // ================================================================
         async function fetchDataFromGitHub(token) {
             const url =
@@ -602,32 +612,44 @@
                 }
             });
             if (!resp.ok) {
-                if (resp.status === 404) {
-                    // 文件不存在，返回空数据
-                    return null;
-                }
+                if (resp.status === 404) return null;
                 const err = await resp.json().catch(() => ({}));
-                throw new Error(`GitHub API 错误 (${resp.status}): ${err.message || resp.statusText}`);
+                throw new Error(`GitHub API 錯誤 (${resp.status}): ${err.message || resp.statusText}`);
             }
             const data = await resp.json();
-            const content = atob(data.content);
+            // 使用 TextDecoder 正確解碼 UTF-8
+            const binary = atob(data.content);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            const text = new TextDecoder('utf-8').decode(bytes);
             return {
                 sha: data.sha,
-                content: JSON.parse(content),
+                content: JSON.parse(text),
             };
         }
 
         async function saveDataToGitHub(token, data, sha) {
             const url =
                 `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?ref=${BRANCH}`;
+            // 使用 TextEncoder 正確編碼 UTF-8
+            const jsonStr = JSON.stringify(data, null, 2);
+            const encoder = new TextEncoder();
+            const bytes = encoder.encode(jsonStr);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            const content = btoa(binary);
+
             const payload = {
-                message: `更新数据 ${new Date().toLocaleString()}`,
-                content: btoa(JSON.stringify(data, null, 2)),
+                message: `更新資料 ${new Date().toLocaleString()}`,
+                content: content,
                 branch: BRANCH,
             };
-            if (sha) {
-                payload.sha = sha;
-            }
+            if (sha) payload.sha = sha;
+
             const resp = await fetch(url, {
                 method: 'PUT',
                 headers: {
@@ -639,37 +661,34 @@
             });
             if (!resp.ok) {
                 const err = await resp.json().catch(() => ({}));
-                throw new Error(`保存失败 (${resp.status}): ${err.message || resp.statusText}`);
+                throw new Error(`儲存失敗 (${resp.status}): ${err.message || resp.statusText}`);
             }
             const result = await resp.json();
             return result.content.sha;
         }
 
         // ================================================================
-        //  核心数据加载 / 保存
+        //  核心資料載入 / 儲存
         // ================================================================
         async function loadData(token) {
-            setStatus('<i class="fas fa-spinner fa-pulse"></i> 加载中...', 'loading');
+            setStatus('<i class="fas fa-spinner fa-pulse"></i> 載入中...', 'loading');
             try {
                 const result = await fetchDataFromGitHub(token);
                 if (result === null) {
-                    // 文件不存在，初始化空数据
                     memoData = {};
                     DEPARTMENTS.forEach(d => { memoData[d] = []; });
                     progressData = [];
-                    setStatus('<i class="fas fa-file"></i> 新文件已创建', '');
-                    // 自动保存一次
+                    setStatus('<i class="fas fa-file"></i> 新檔案已建立', '');
                     await saveAllData(token);
                 } else {
                     const parsed = result.content;
-                    // 兼容旧数据
                     memoData = parsed.memoData || {};
                     progressData = parsed.progressData || [];
-                    // 确保所有部门都有
                     DEPARTMENTS.forEach(d => {
                         if (!memoData[d]) memoData[d] = [];
                     });
-                    setStatus(`<i class="fas fa-check-circle"></i> 已加载 (${Object.values(memoData).reduce((a,b) => a + b.length, 0) + progressData.length} 项)`, '');
+                    const total = Object.values(memoData).reduce((a, b) => a + b.length, 0) + progressData.length;
+                    setStatus(`<i class="fas fa-check-circle"></i> 已載入 (${total} 項)`, '');
                 }
                 refreshAll();
             } catch (err) {
@@ -685,28 +704,28 @@
                 updatedAt: new Date().toISOString(),
             };
             try {
-                // 先获取当前文件的sha
                 const result = await fetchDataFromGitHub(token);
                 const sha = result ? result.sha : null;
                 await saveDataToGitHub(token, fullData, sha);
-                setStatus(`<i class="fas fa-check-circle"></i> 已保存 (${new Date().toLocaleTimeString()})`, '');
+                setStatus(`<i class="fas fa-check-circle"></i> 已儲存 (${new Date().toLocaleTimeString()})`, '');
                 return true;
             } catch (err) {
                 console.error(err);
-                setStatus(`<i class="fas fa-exclamation-circle"></i> 保存失败: ${err.message}`, 'error');
+                setStatus(`<i class="fas fa-exclamation-circle"></i> 儲存失敗: ${err.message}`, 'error');
                 return false;
             }
         }
 
         // ================================================================
-        //  渲染函数
+        //  渲染函數
         // ================================================================
         function renderDeptTabs() {
             deptTabsEl.innerHTML = '';
             DEPARTMENTS.forEach(dept => {
+                const count = (memoData[dept] || []).length;
                 const btn = document.createElement('button');
                 btn.className = `dept-tab ${dept === currentDept ? 'active' : ''}`;
-                btn.textContent = dept;
+                btn.innerHTML = `${dept} <span class="count-badge">${count}</span>`;
                 btn.dataset.dept = dept;
                 btn.addEventListener('click', () => {
                     currentDept = dept;
@@ -720,18 +739,18 @@
         function renderMemoCards() {
             const items = memoData[currentDept] || [];
             const total = items.length;
-            deptSummary.innerHTML = `<i class="fas fa-list-ul"></i> 总计 ${total} 项`;
+            deptSummary.innerHTML = `<i class="fas fa-list-ul"></i> 總計 ${total} 項`;
 
             if (total === 0) {
                 memoCardGrid.innerHTML =
-                    `<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">暂无项目，点「新增项目」添加</div>`;
+                    `<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">暫無項目，點「新增項目」添加</div>`;
                 return;
             }
 
             let html = '';
             items.forEach(item => {
                 const progClass = item.progress === '已完成' ? 'badge-red' : 'badge-green';
-                const statClass = item.status === '紧急' ? 'badge-urgent' : 'badge-normal';
+                const statClass = item.status === '緊急' ? 'badge-urgent' : 'badge-normal';
                 html += `
                     <div class="task-card" data-id="${item.id}">
                         <div class="card-title">${escapeHtml(item.name)}</div>
@@ -741,13 +760,15 @@
                             ${item.note ? `<span style="font-size:0.8rem; color:#4a6885;"><i class="far fa-sticky-note"></i> ${escapeHtml(item.note)}</span>` : ''}
                         </div>
                         <div class="card-actions">
-                            <button class="delete-btn" data-id="${item.id}" data-type="memo"><i class="fas fa-trash"></i> 删除</button>
+                            <button class="edit-btn" data-id="${item.id}"><i class="fas fa-edit"></i> 編輯</button>
+                            <button class="delete-btn" data-id="${item.id}" data-type="memo"><i class="fas fa-trash"></i> 刪除</button>
                         </div>
                     </div>
                 `;
             });
             memoCardGrid.innerHTML = html;
 
+            // 刪除事件
             memoCardGrid.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     deleteTarget = { type: 'memo', id: btn.dataset.id };
@@ -755,12 +776,29 @@
                     deletePassword.value = '';
                 });
             });
+
+            // 編輯事件
+            memoCardGrid.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.dataset.id;
+                    const item = (memoData[currentDept] || []).find(i => i.id === id);
+                    if (item) {
+                        editTarget = { dept: currentDept, item: item };
+                        memoName.value = item.name || '';
+                        memoProgress.value = item.progress || '未完成';
+                        memoNote.value = item.note || '';
+                        memoStatus.value = item.status || '正常';
+                        $('memoModalTitle').innerHTML = '<i class="fas fa-edit"></i> 編輯備忘項目';
+                        memoModal.classList.add('show');
+                    }
+                });
+            });
         }
 
         function renderProgress() {
             if (progressData.length === 0) {
                 progressGrid.innerHTML =
-                    `<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">暂无工作进度记录</div>`;
+                    `<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">暫無工作進度記錄</div>`;
                 return;
             }
             let html = '';
@@ -770,8 +808,8 @@
                         <div class="wp-dept"><i class="fas fa-building"></i> ${escapeHtml(item.dept)}</div>
                         <div class="wp-project"><strong>${escapeHtml(item.project)}</strong></div>
                         <div class="wp-meta"><i class="far fa-calendar-alt"></i> ${escapeHtml(item.month)} ${item.note ? '· '+escapeHtml(item.note) : ''}</div>
-                        <div style="margin-top:8px; display:flex; justify-content:flex-end;">
-                            <button class="delete-btn" data-id="${item.id}" data-type="progress"><i class="fas fa-trash"></i> 删除</button>
+                        <div class="card-actions">
+                            <button class="delete-btn" data-id="${item.id}" data-type="progress"><i class="fas fa-trash"></i> 刪除</button>
                         </div>
                     </div>
                 `;
@@ -787,13 +825,6 @@
             });
         }
 
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
         function refreshAll() {
             if (currentMode === 'memo') {
                 renderDeptTabs();
@@ -801,7 +832,6 @@
             } else {
                 renderProgress();
             }
-            // 填充进度部门下拉
             progressDept.innerHTML = '';
             DEPARTMENTS.forEach(d => {
                 const opt = document.createElement('option');
@@ -809,16 +839,14 @@
                 opt.textContent = d;
                 progressDept.appendChild(opt);
             });
-            // 默认选中当前部门
             progressDept.value = currentDept;
-            // 设置月份默认值
             if (!progressMonth.value) {
                 progressMonth.value = new Date().toISOString().slice(0, 7);
             }
         }
 
         // ================================================================
-        //  模式切换
+        //  模式切換
         // ================================================================
         document.querySelectorAll('.mode-tab').forEach(tab => {
             tab.addEventListener('click', function() {
@@ -837,13 +865,15 @@
         });
 
         // ================================================================
-        //  新增备忘录
+        //  新增備忘錄
         // ================================================================
         addMemoBtn.addEventListener('click', () => {
+            editTarget = null;
             memoName.value = '';
             memoProgress.value = '未完成';
             memoNote.value = '';
             memoStatus.value = '正常';
+            $('memoModalTitle').innerHTML = '<i class="fas fa-pen"></i> 新增備忘項目';
             memoModal.classList.add('show');
         });
 
@@ -851,24 +881,43 @@
 
         $('memoModalSave').addEventListener('click', async () => {
             const name = memoName.value.trim();
-            if (!name) { alert('请输入项目名称'); return; }
+            if (!name) { alert('請輸入項目名稱'); return; }
             const progress = memoProgress.value;
             const note = memoNote.value.trim();
             const status = memoStatus.value;
             if (progress === '未完成' && !note) {
-                alert('未完成项目必须填写备注');
+                alert('未完成項目必須填寫備註');
                 return;
             }
-            const item = { id: genId(), name, progress, note: note || '', status };
-            if (!memoData[currentDept]) memoData[currentDept] = [];
-            memoData[currentDept].push(item);
+
+            if (editTarget) {
+                // 編輯模式
+                const idx = memoData[editTarget.dept].findIndex(i => i.id === editTarget.item.id);
+                if (idx !== -1) {
+                    memoData[editTarget.dept][idx] = {
+                        ...memoData[editTarget.dept][idx],
+                        name,
+                        progress,
+                        note: note || '',
+                        status,
+                    };
+                }
+                editTarget = null;
+            } else {
+                // 新增模式
+                const item = { id: genId(), name, progress, note: note || '', status };
+                if (!memoData[currentDept]) memoData[currentDept] = [];
+                memoData[currentDept].push(item);
+            }
+
             memoModal.classList.remove('show');
             await saveAllData(githubToken);
+            renderDeptTabs();
             renderMemoCards();
         });
 
         // ================================================================
-        //  新增工作进度
+        //  新增工作進度
         // ================================================================
         addProgressBtn.addEventListener('click', () => {
             progressDept.value = currentDept;
@@ -885,7 +934,7 @@
             const project = progressProject.value.trim();
             const month = progressMonth.value;
             const note = progressNote.value.trim();
-            if (!dept || !project || !month) { alert('请填写完整信息'); return; }
+            if (!dept || !project || !month) { alert('請填寫完整資訊'); return; }
             progressData.push({ id: genId(), dept, project, month, note });
             progressModal.classList.remove('show');
             await saveAllData(githubToken);
@@ -893,7 +942,7 @@
         });
 
         // ================================================================
-        //  删除（密码 yuki）
+        //  刪除（密碼 yuki）
         // ================================================================
         $('deleteModalCancel').addEventListener('click', () => {
             deleteModal.classList.remove('show');
@@ -903,7 +952,7 @@
         $('deleteModalConfirm').addEventListener('click', async () => {
             const pwd = deletePassword.value.trim();
             if (pwd !== DELETE_PASSWORD) {
-                alert('密码错误');
+                alert('密碼錯誤');
                 return;
             }
             if (!deleteTarget) return;
@@ -912,6 +961,7 @@
                     memoData[dept] = memoData[dept].filter(item => item.id !== deleteTarget.id);
                 }
                 await saveAllData(githubToken);
+                renderDeptTabs();
                 renderMemoCards();
             } else if (deleteTarget.type === 'progress') {
                 progressData = progressData.filter(item => item.id !== deleteTarget.id);
@@ -923,39 +973,33 @@
         });
 
         // ================================================================
-        //  加载按钮
+        //  載入按鈕
         // ================================================================
         loadBtn.addEventListener('click', async () => {
             const token = tokenInput.value.trim();
             if (!token) {
-                setStatus('<i class="fas fa-exclamation-circle"></i> 请输入Token', 'error');
+                setStatus('<i class="fas fa-exclamation-circle"></i> 請輸入Token', 'error');
                 return;
             }
             if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
-                setStatus('<i class="fas fa-exclamation-circle"></i> Token格式不对', 'error');
+                setStatus('<i class="fas fa-exclamation-circle"></i> Token格式不對', 'error');
                 return;
             }
             githubToken = token;
             await loadData(token);
         });
 
-        // 按回车也可以触发加载
         tokenInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') loadBtn.click();
         });
 
         // ================================================================
-        //  自动加载（如果Token已缓存）
+        //  初始化
         // ================================================================
-        // 页面加载后，如果有缓存的token可以自动加载，但为了安全，让用户手动点击
-        // 可以提示用户粘贴token后点击加载
-
-        // 初始化显示
         refreshAll();
-
-        console.log('✅ FHAC 看板已加载');
-        console.log(`📁 数据将存储在: ${GITHUB_USER}/${GITHUB_REPO}/${DATA_FILE}`);
-        console.log('🔑 请粘贴您的GitHub Token后点击「加载数据」');
+        console.log('✅ FHAC 看板已載入');
+        console.log(`📁 資料將儲存在: ${GITHUB_USER}/${GITHUB_REPO}/${DATA_FILE}`);
+        console.log('🔑 請貼上您的 GitHub Token 後點擊「載入資料」');
     </script>
 </body>
 </html>
