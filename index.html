@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FHAC · 团队协作看板</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ===== 全局重置 & 布局 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #f0f4fc;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            max-width: 1300px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.06), 0 6px 12px rgba(0,0,0,0.03);
+            padding: 24px 28px 40px;
+        }
+
+        /* ===== 头部 ===== */
+        .app-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            border-bottom: 1px solid #eef2f6;
+            padding-bottom: 16px;
+        }
+        .app-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #0b1a33;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .app-title small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #6b7a8f;
+            margin-left: 6px;
+        }
+        .token-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f0f4fe;
+            padding: 6px 16px 6px 20px;
+            border-radius: 60px;
+            flex-wrap: wrap;
+        }
+        .token-section label {
+            font-weight: 500;
+            color: #1a2b44;
+            font-size: 0.9rem;
+        }
+        .token-section input {
+            border: none;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            width: 200px;
+            font-size: 0.9rem;
+            outline: 1px solid #d9e0e8;
+            transition: 0.2s;
+        }
+        .token-section input:focus {
+            outline: 2px solid #2d6ff7;
+            outline-offset: 1px;
+        }
+        .token-section button {
+            background: #1e2f4a;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.15s;
+        }
+        .token-section button:hover {
+            background: #0f1e33;
+        }
+        .token-status {
+            font-size: 0.8rem;
+            padding: 4px 14px;
+            border-radius: 30px;
+            background: #e3f5eb;
+            color: #1e7b4b;
+        }
+        .token-status.error {
+            background: #fde8e8;
+            color: #b33;
+        }
+        .token-status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        /* ===== 模式切换 ===== */
+        .mode-tabs {
+            display: flex;
+            gap: 12px;
+            margin: 20px 0 24px;
+            border-bottom: 2px solid #eef2f6;
+            padding-bottom: 6px;
+        }
+        .mode-tab {
+            padding: 10px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            color: #5d6f83;
+            cursor: pointer;
+            transition: 0.15s;
+            font-size: 1rem;
+        }
+        .mode-tab.active {
+            background: #0b1a33;
+            color: white;
+            box-shadow: 0 4px 8px rgba(11,26,51,0.12);
+        }
+        .mode-tab i {
+            margin-right: 8px;
+        }
+
+        /* ===== 部门切换 ===== */
+        .dept-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 10px;
+            margin: 6px 0 18px;
+            padding: 4px 0 10px;
+            border-bottom: 1px dashed #dfe6ef;
+        }
+        .dept-tab {
+            background: white;
+            border: 1px solid #d4dce8;
+            padding: 6px 22px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1f334a;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .dept-tab.active {
+            background: #1f334a;
+            border-color: #1f334a;
+            color: white;
+        }
+        .dept-tab:hover {
+            background: #e9eff7;
+        }
+        .dept-tab.active:hover {
+            background: #142433;
+        }
+
+        /* ===== 统计 & 卡片 ===== */
+        .summary-stats {
+            background: #f8faff;
+            padding: 12px 20px;
+            border-radius: 60px;
+            display: inline-block;
+            margin-bottom: 18px;
+            font-weight: 500;
+            color: #10304b;
+            border: 1px solid #e0e8f2;
+        }
+        .summary-stats i {
+            margin-right: 10px;
+            color: #2d6ff7;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+            margin-top: 10px;
+        }
+        .task-card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px 18px 14px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.02), 0 0 0 1px #eef2f6;
+            border-left: 4px solid #d0dae8;
+            position: relative;
+        }
+        .task-card .card-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #0b1e30;
+            margin-bottom: 8px;
+        }
+        .task-card .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px 14px;
+            font-size: 0.85rem;
+            color: #2a405c;
+            margin-top: 6px;
+        }
+        .badge-progress {
+            padding: 3px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .badge-green {
+            background: #d5f0e0;
+            color: #0b5532;
+        }
+        .badge-red {
+            background: #ffe4e4;
+            color: #b13a3a;
+        }
+        .badge-urgent {
+            background: #ffd9b3;
+            color: #944d0c;
+        }
+        .badge-normal {
+            background: #e6edf6;
+            color: #1f3d5c;
+        }
+        .card-actions {
+            margin-top: 12px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            border-top: 1px solid #f0f4fa;
+            padding-top: 10px;
+        }
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #b0c0d0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 2px 8px;
+            border-radius: 30px;
+            transition: 0.1s;
+        }
+        .delete-btn:hover {
+            background: #fee9e9;
+            color: #b33;
+        }
+        .add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eef3fc;
+            border: 1px dashed #8aa1c0;
+            padding: 8px 22px;
+            border-radius: 60px;
+            font-weight: 500;
+            color: #1a3457;
+            cursor: pointer;
+            transition: 0.1s;
+            margin: 12px 0 4px;
+        }
+        .add-btn:hover {
+            background: #dfe9f7;
+            border-color: #2d6ff7;
+        }
+        .dept-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== 工作进度 ===== */
+        .work-progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+            margin-top: 10px;
+        }
+        .work-card {
+            background: #fafcff;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 0 0 1px #e6edf6;
+        }
+        .work-card .wp-dept {
+            font-weight: 600;
+            color: #002856;
+        }
+        .work-card .wp-project {
+            font-size: 1rem;
+            margin: 4px 0;
+        }
+        .work-card .wp-meta {
+            font-size: 0.8rem;
+            color: #3f5877;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .text-muted {
+            color: #6f85a0;
+        }
+        .flex {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mt-2 {
+            margin-top: 12px;
+        }
+
+        /* ===== 模态框 ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.15s;
+        }
+        .modal-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-box {
+            background: white;
+            max-width: 420px;
+            width: 90%;
+            padding: 28px 30px;
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+        }
+        .modal-box h3 {
+            margin-bottom: 18px;
+            font-size: 1.3rem;
+        }
+        .modal-box label {
+            display: block;
+            margin: 12px 0 4px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .modal-box input,
+        .modal-box select,
+        .modal-box textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d4dce8;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background: #fafcff;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: flex-end;
+        }
+        .modal-box .modal-actions button {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 60px;
+            font-weight: 500;
+            background: #eef2f6;
+            cursor: pointer;
+        }
+        .modal-box .modal-actions .btn-primary {
+            background: #0b1a33;
+            color: white;
+        }
+        .modal-box .modal-actions .btn-primary:hover {
+            background: #1a3050;
+        }
+
+        @media (max-width: 600px) {
+            .app-container {
+                padding: 16px;
+            }
+            .token-section {
+                flex-wrap: wrap;
+            }
+            .token-section input {
+                width: 100%;
+            }
+        }
+
+        /* 加载占位 */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px 0;
+            color: #6b7a8f;
+        }
+        .loading-spinner i {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" id="app">
+        <!-- 头部 -->
+        <div class="app-header">
+            <div class="app-title">
+                FHAC <small>· 团队同步</small>
+            </div>
+            <div class="token-section">
+                <label><i class="fas fa-key"></i> Token</label>
+                <input type="text" id="tokenInput" placeholder="ghp_xxxxxxxx" />
+                <button id="loadTokenBtn"><i class="fas fa-sync-alt"></i> 加载数据</button>
+                <span class="token-status" id="tokenStatus"><i class="fas fa-spinner fa-pulse"></i> 未连接</span>
+            </div>
+        </div>
+
+        <!-- 模式切换 -->
+        <div class="mode-tabs">
+            <button class="mode-tab active" data-mode="memo"><i class="fas fa-sticky-note"></i> 备忘录</button>
+            <button class="mode-tab" data-mode="progress"><i class="fas fa-chart-line"></i> 工作进度</button>
+        </div>
+
+        <!-- 备忘录区域 -->
+        <div id="memoSection">
+            <div class="dept-tabs" id="deptTabs"></div>
+            <div class="dept-header">
+                <div class="summary-stats" id="deptSummary"><i class="fas fa-list-ul"></i> 总计 0 项</div>
+                <button class="add-btn" id="addMemoBtn"><i class="fas fa-plus-circle"></i> 新增项目</button>
+            </div>
+            <div id="memoCardGrid"><div class="loading-spinner"><i class="fas fa-cloud-upload-alt"></i>点击「加载数据」同步</div></div>
+        </div>
+
+        <!-- 工作进度区域 -->
+        <div id="progressSection" class="hidden">
+            <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+                <button class="add-btn" id="addProgressBtn"><i class="fas fa-plus-circle"></i> 添加工进度</button>
+            </div>
+            <div id="progressGrid"><div class="loading-spinner"><i class="fas fa-cloud-upload-alt"></i>点击「加载数据」同步</div></div>
+        </div>
+    </div>
+
+    <!-- ===== 模态框：备忘录 ===== -->
+    <div class="modal-overlay" id="memoModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-pen"></i> 新增备忘项目</h3>
+            <label>项目名称</label>
+            <input id="memoName" placeholder="例如：年度報告" />
+            <label>进度</label>
+            <select id="memoProgress">
+                <option value="未完成">未完成 (绿色)</option>
+                <option value="已完成">已完成 (红色)</option>
+            </select>
+            <label>备注 <span style="color:#b33;font-weight:400;">(未完成时必填)</span></label>
+            <input id="memoNote" placeholder="备注内容" />
+            <label>状态</label>
+            <select id="memoStatus">
+                <option value="正常">正常</option>
+                <option value="紧急">紧急</option>
+            </select>
+            <div class="modal-actions">
+                <button id="memoModalCancel">取消</button>
+                <button class="btn-primary" id="memoModalSave">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 模态框：工作进度 ===== -->
+    <div class="modal-overlay" id="progressModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-tasks"></i> 新增工作进度</h3>
+            <label>部门</label>
+            <select id="progressDept"></select>
+            <label>项目</label>
+            <input id="progressProject" placeholder="项目名称" />
+            <label>进度 (月份)</label>
+            <input id="progressMonth" type="month" />
+            <label>备注</label>
+            <input id="progressNote" placeholder="备注" />
+            <div class="modal-actions">
+                <button id="progressModalCancel">取消</button>
+                <button class="btn-primary" id="progressModalSave">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 模态框：删除 ===== -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal-box">
+            <h3><i class="fas fa-trash-alt"></i> 删除项目</h3>
+            <p style="color:#4d5f78;">请输入删除密码</p>
+            <input type="password" id="deletePassword" placeholder="密码" style="width:100%; padding:12px; border-radius:30px; border:1px solid #d4dce8;" />
+            <div class="modal-actions">
+                <button id="deleteModalCancel">取消</button>
+                <button class="btn-primary" id="deleteModalConfirm">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  配置
+        // ================================================================
+        const GITHUB_USER = 'althellobye';
+        const GITHUB_REPO = 'FHAC';
+        const DATA_FILE = 'data.json';
+        const BRANCH = 'main';
+
+        const DEPARTMENTS = ['總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '心悅', '喜悅', '欣悅', '樂膳'];
+        const DELETE_PASSWORD = 'yuki';
+
+        // ================================================================
+        //  全局状态
+        // ================================================================
+        let currentMode = 'memo';
+        let currentDept = '總會';
+        let deleteTarget = null; // { type: 'memo'|'progress', id: string }
+
+        // 数据缓存
+        let memoData = {};
+        let progressData = [];
+
+        // 当前使用的token
+        let githubToken = '';
+
+        // DOM 引用
+        const $ = (id) => document.getElementById(id);
+        const tokenInput = $('tokenInput');
+        const tokenStatus = $('tokenStatus');
+        const loadBtn = $('loadTokenBtn');
+
+        const memoSection = $('memoSection');
+        const progressSection = $('progressSection');
+        const deptTabsEl = $('deptTabs');
+        const memoCardGrid = $('memoCardGrid');
+        const deptSummary = $('deptSummary');
+        const progressGrid = $('progressGrid');
+
+        const addMemoBtn = $('addMemoBtn');
+        const addProgressBtn = $('addProgressBtn');
+
+        // 模态框
+        const memoModal = $('memoModal');
+        const progressModal = $('progressModal');
+        const deleteModal = $('deleteModal');
+
+        // 表单
+        const memoName = $('memoName');
+        const memoProgress = $('memoProgress');
+        const memoNote = $('memoNote');
+        const memoStatus = $('memoStatus');
+        const progressDept = $('progressDept');
+        const progressProject = $('progressProject');
+        const progressMonth = $('progressMonth');
+        const progressNote = $('progressNote');
+        const deletePassword = $('deletePassword');
+
+        // ================================================================
+        //  工具函数
+        // ================================================================
+        function genId() {
+            return Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
+        }
+
+        function setStatus(text, type = '') {
+            tokenStatus.innerHTML = text;
+            tokenStatus.className = 'token-status' + (type ? ' ' + type : '');
+        }
+
+        // ================================================================
+        //  GitHub API 读写
+        // ================================================================
+        async function fetchDataFromGitHub(token) {
+            const url =
+                `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?ref=${BRANCH}`;
+            const resp = await fetch(url, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                }
+            });
+            if (!resp.ok) {
+                if (resp.status === 404) {
+                    // 文件不存在，返回空数据
+                    return null;
+                }
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(`GitHub API 错误 (${resp.status}): ${err.message || resp.statusText}`);
+            }
+            const data = await resp.json();
+            const content = atob(data.content);
+            return {
+                sha: data.sha,
+                content: JSON.parse(content),
+            };
+        }
+
+        async function saveDataToGitHub(token, data, sha) {
+            const url =
+                `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?ref=${BRANCH}`;
+            const payload = {
+                message: `更新数据 ${new Date().toLocaleString()}`,
+                content: btoa(JSON.stringify(data, null, 2)),
+                branch: BRANCH,
+            };
+            if (sha) {
+                payload.sha = sha;
+            }
+            const resp = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(`保存失败 (${resp.status}): ${err.message || resp.statusText}`);
+            }
+            const result = await resp.json();
+            return result.content.sha;
+        }
+
+        // ================================================================
+        //  核心数据加载 / 保存
+        // ================================================================
+        async function loadData(token) {
+            setStatus('<i class="fas fa-spinner fa-pulse"></i> 加载中...', 'loading');
+            try {
+                const result = await fetchDataFromGitHub(token);
+                if (result === null) {
+                    // 文件不存在，初始化空数据
+                    memoData = {};
+                    DEPARTMENTS.forEach(d => { memoData[d] = []; });
+                    progressData = [];
+                    setStatus('<i class="fas fa-file"></i> 新文件已创建', '');
+                    // 自动保存一次
+                    await saveAllData(token);
+                } else {
+                    const parsed = result.content;
+                    // 兼容旧数据
+                    memoData = parsed.memoData || {};
+                    progressData = parsed.progressData || [];
+                    // 确保所有部门都有
+                    DEPARTMENTS.forEach(d => {
+                        if (!memoData[d]) memoData[d] = [];
+                    });
+                    setStatus(`<i class="fas fa-check-circle"></i> 已加载 (${Object.values(memoData).reduce((a,b) => a + b.length, 0) + progressData.length} 项)`, '');
+                }
+                refreshAll();
+            } catch (err) {
+                console.error(err);
+                setStatus(`<i class="fas fa-exclamation-circle"></i> ${err.message}`, 'error');
+            }
+        }
+
+        async function saveAllData(token) {
+            const fullData = {
+                memoData: memoData,
+                progressData: progressData,
+                updatedAt: new Date().toISOString(),
+            };
+            try {
+                // 先获取当前文件的sha
+                const result = await fetchDataFromGitHub(token);
+                const sha = result ? result.sha : null;
+                await saveDataToGitHub(token, fullData, sha);
+                setStatus(`<i class="fas fa-check-circle"></i> 已保存 (${new Date().toLocaleTimeString()})`, '');
+                return true;
+            } catch (err) {
+                console.error(err);
+                setStatus(`<i class="fas fa-exclamation-circle"></i> 保存失败: ${err.message}`, 'error');
+                return false;
+            }
+        }
+
+        // ================================================================
+        //  渲染函数
+        // ================================================================
+        function renderDeptTabs() {
+            deptTabsEl.innerHTML = '';
+            DEPARTMENTS.forEach(dept => {
+                const btn = document.createElement('button');
+                btn.className = `dept-tab ${dept === currentDept ? 'active' : ''}`;
+                btn.textContent = dept;
+                btn.dataset.dept = dept;
+                btn.addEventListener('click', () => {
+                    currentDept = dept;
+                    renderDeptTabs();
+                    renderMemoCards();
+                });
+                deptTabsEl.appendChild(btn);
+            });
+        }
+
+        function renderMemoCards() {
+            const items = memoData[currentDept] || [];
+            const total = items.length;
+            deptSummary.innerHTML = `<i class="fas fa-list-ul"></i> 总计 ${total} 项`;
+
+            if (total === 0) {
+                memoCardGrid.innerHTML =
+                    `<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">暂无项目，点「新增项目」添加</div>`;
+                return;
+            }
+
+            let html = '';
+            items.forEach(item => {
+                const progClass = item.progress === '已完成' ? 'badge-red' : 'badge-green';
+                const statClass = item.status === '紧急' ? 'badge-urgent' : 'badge-normal';
+                html += `
+                    <div class="task-card" data-id="${item.id}">
+                        <div class="card-title">${escapeHtml(item.name)}</div>
+                        <div class="card-meta">
+                            <span class="badge-progress ${progClass}">${item.progress}</span>
+                            <span class="badge-progress ${statClass}">${item.status}</span>
+                            ${item.note ? `<span style="font-size:0.8rem; color:#4a6885;"><i class="far fa-sticky-note"></i> ${escapeHtml(item.note)}</span>` : ''}
+                        </div>
+                        <div class="card-actions">
+                            <button class="delete-btn" data-id="${item.id}" data-type="memo"><i class="fas fa-trash"></i> 删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            memoCardGrid.innerHTML = html;
+
+            memoCardGrid.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    deleteTarget = { type: 'memo', id: btn.dataset.id };
+                    deleteModal.classList.add('show');
+                    deletePassword.value = '';
+                });
+            });
+        }
+
+        function renderProgress() {
+            if (progressData.length === 0) {
+                progressGrid.innerHTML =
+                    `<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">暂无工作进度记录</div>`;
+                return;
+            }
+            let html = '';
+            progressData.forEach(item => {
+                html += `
+                    <div class="work-card">
+                        <div class="wp-dept"><i class="fas fa-building"></i> ${escapeHtml(item.dept)}</div>
+                        <div class="wp-project"><strong>${escapeHtml(item.project)}</strong></div>
+                        <div class="wp-meta"><i class="far fa-calendar-alt"></i> ${escapeHtml(item.month)} ${item.note ? '· '+escapeHtml(item.note) : ''}</div>
+                        <div style="margin-top:8px; display:flex; justify-content:flex-end;">
+                            <button class="delete-btn" data-id="${item.id}" data-type="progress"><i class="fas fa-trash"></i> 删除</button>
+                        </div>
+                    </div>
+                `;
+            });
+            progressGrid.innerHTML = html;
+
+            progressGrid.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    deleteTarget = { type: 'progress', id: btn.dataset.id };
+                    deleteModal.classList.add('show');
+                    deletePassword.value = '';
+                });
+            });
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function refreshAll() {
+            if (currentMode === 'memo') {
+                renderDeptTabs();
+                renderMemoCards();
+            } else {
+                renderProgress();
+            }
+            // 填充进度部门下拉
+            progressDept.innerHTML = '';
+            DEPARTMENTS.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                progressDept.appendChild(opt);
+            });
+            // 默认选中当前部门
+            progressDept.value = currentDept;
+            // 设置月份默认值
+            if (!progressMonth.value) {
+                progressMonth.value = new Date().toISOString().slice(0, 7);
+            }
+        }
+
+        // ================================================================
+        //  模式切换
+        // ================================================================
+        document.querySelectorAll('.mode-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentMode = this.dataset.mode;
+                if (currentMode === 'memo') {
+                    memoSection.classList.remove('hidden');
+                    progressSection.classList.add('hidden');
+                } else {
+                    memoSection.classList.add('hidden');
+                    progressSection.classList.remove('hidden');
+                }
+                refreshAll();
+            });
+        });
+
+        // ================================================================
+        //  新增备忘录
+        // ================================================================
+        addMemoBtn.addEventListener('click', () => {
+            memoName.value = '';
+            memoProgress.value = '未完成';
+            memoNote.value = '';
+            memoStatus.value = '正常';
+            memoModal.classList.add('show');
+        });
+
+        $('memoModalCancel').addEventListener('click', () => memoModal.classList.remove('show'));
+
+        $('memoModalSave').addEventListener('click', async () => {
+            const name = memoName.value.trim();
+            if (!name) { alert('请输入项目名称'); return; }
+            const progress = memoProgress.value;
+            const note = memoNote.value.trim();
+            const status = memoStatus.value;
+            if (progress === '未完成' && !note) {
+                alert('未完成项目必须填写备注');
+                return;
+            }
+            const item = { id: genId(), name, progress, note: note || '', status };
+            if (!memoData[currentDept]) memoData[currentDept] = [];
+            memoData[currentDept].push(item);
+            memoModal.classList.remove('show');
+            await saveAllData(githubToken);
+            renderMemoCards();
+        });
+
+        // ================================================================
+        //  新增工作进度
+        // ================================================================
+        addProgressBtn.addEventListener('click', () => {
+            progressDept.value = currentDept;
+            progressProject.value = '';
+            progressMonth.value = new Date().toISOString().slice(0, 7);
+            progressNote.value = '';
+            progressModal.classList.add('show');
+        });
+
+        $('progressModalCancel').addEventListener('click', () => progressModal.classList.remove('show'));
+
+        $('progressModalSave').addEventListener('click', async () => {
+            const dept = progressDept.value;
+            const project = progressProject.value.trim();
+            const month = progressMonth.value;
+            const note = progressNote.value.trim();
+            if (!dept || !project || !month) { alert('请填写完整信息'); return; }
+            progressData.push({ id: genId(), dept, project, month, note });
+            progressModal.classList.remove('show');
+            await saveAllData(githubToken);
+            renderProgress();
+        });
+
+        // ================================================================
+        //  删除（密码 yuki）
+        // ================================================================
+        $('deleteModalCancel').addEventListener('click', () => {
+            deleteModal.classList.remove('show');
+            deleteTarget = null;
+        });
+
+        $('deleteModalConfirm').addEventListener('click', async () => {
+            const pwd = deletePassword.value.trim();
+            if (pwd !== DELETE_PASSWORD) {
+                alert('密码错误');
+                return;
+            }
+            if (!deleteTarget) return;
+            if (deleteTarget.type === 'memo') {
+                for (let dept in memoData) {
+                    memoData[dept] = memoData[dept].filter(item => item.id !== deleteTarget.id);
+                }
+                await saveAllData(githubToken);
+                renderMemoCards();
+            } else if (deleteTarget.type === 'progress') {
+                progressData = progressData.filter(item => item.id !== deleteTarget.id);
+                await saveAllData(githubToken);
+                renderProgress();
+            }
+            deleteModal.classList.remove('show');
+            deleteTarget = null;
+        });
+
+        // ================================================================
+        //  加载按钮
+        // ================================================================
+        loadBtn.addEventListener('click', async () => {
+            const token = tokenInput.value.trim();
+            if (!token) {
+                setStatus('<i class="fas fa-exclamation-circle"></i> 请输入Token', 'error');
+                return;
+            }
+            if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
+                setStatus('<i class="fas fa-exclamation-circle"></i> Token格式不对', 'error');
+                return;
+            }
+            githubToken = token;
+            await loadData(token);
+        });
+
+        // 按回车也可以触发加载
+        tokenInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') loadBtn.click();
+        });
+
+        // ================================================================
+        //  自动加载（如果Token已缓存）
+        // ================================================================
+        // 页面加载后，如果有缓存的token可以自动加载，但为了安全，让用户手动点击
+        // 可以提示用户粘贴token后点击加载
+
+        // 初始化显示
+        refreshAll();
+
+        console.log('✅ FHAC 看板已加载');
+        console.log(`📁 数据将存储在: ${GITHUB_USER}/${GITHUB_REPO}/${DATA_FILE}`);
+        console.log('🔑 请粘贴您的GitHub Token后点击「加载数据」');
+    </script>
+</body>
+</html>
