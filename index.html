@@ -525,8 +525,8 @@
                 <option value="未完成">未完成 (綠色)</option>
                 <option value="已完成">已完成 (紅色)</option>
             </select>
-            <label>備註 <span style="color:#b33;font-weight:400;">(未完成時必填)</span></label>
-            <input id="memoNote" placeholder="備註內容" />
+            <label>備註 <span style="color:#888;font-weight:400;">(非必填)</span></label>
+            <input id="memoNote" placeholder="備註內容 (選填)" />
             <label>狀態</label>
             <select id="memoStatus">
                 <option value="正常">正常</option>
@@ -623,12 +623,6 @@
             } catch (e) {
                 return '';
             }
-        }
-
-        function clearTokenFromStorage() {
-            try {
-                localStorage.removeItem(STORAGE_KEY);
-            } catch (e) {}
         }
 
         // ================================================================
@@ -962,9 +956,9 @@
             const name = memoName.value.trim();
             if (!name) { alert('請輸入項目名稱'); return; }
             const progress = memoProgress.value;
-            const note = memoNote.value.trim();
+            const note = memoNote.value.trim(); // 非必填，可以空白
             const status = memoStatus.value;
-            if (progress === '未完成' && !note) { alert('未完成項目必須填寫備註'); return; }
+            // ✅ 移除備註必填檢查
             if (editTarget) {
                 const idx = memoData[editTarget.dept].findIndex(i => i.id === editTarget.item.id);
                 if (idx !== -1) {
@@ -1013,7 +1007,6 @@
                 return;
             }
             githubToken = token;
-            // 儲存到瀏覽器
             saveTokenToStorage(token);
             setStatus('<i class="fas fa-save"></i> Token 已儲存', 'saved');
             await loadData(token);
@@ -1042,12 +1035,11 @@
         //  初始化
         // ================================================================
         refreshAll();
-        // 自動載入之前儲存的 Token
         autoLoad();
 
         console.log('✅ FHAC 看板已載入');
         console.log(`📁 資料將儲存在: ${GITHUB_USER}/${GITHUB_REPO}/${DATA_FILE}`);
-        console.log('🔑 Token 會自動儲存在瀏覽器，下次不用重新輸入');
+        console.log('📝 備註已改為非必填');
     </script>
 </body>
 </html>
