@@ -461,6 +461,14 @@
       "work2": {
         "month": "",
         "note": ""
+      },
+      "work3": {
+        "month": "",
+        "note": ""
+      },
+      "work4": {
+        "month": "",
+        "note": ""
       }
     },
     "樂膳": {
@@ -518,7 +526,41 @@
         "month": "",
         "note": ""
       }
+    },
+    "總會/創藝/新濠": {
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "",
+        "note": ""
+      },
+      "work3": {
+        "month": "",
+        "note": ""
+      },
+      "work4": {
+        "month": "",
+        "note": ""
+      },
+      "work5": {
+        "month": "",
+        "note": ""
+      },
+      "work6": {
+        "month": "",
+        "note": ""
+      },
+      "work7": {
+        "month": "2026-01",
+        "note": ""
+      },
+      "work8": {
+        "month": "",
+        "note": ""
+      }
     }
   },
-  "updatedAt": "2026-07-22T07:33:21.991Z"
+  "updatedAt": "2026-07-22T08:10:01.383Z"
 }
