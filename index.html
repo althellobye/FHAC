@@ -17,28 +17,57 @@
         .app-title .version-badge { font-size:0.6rem; background:#e9eff7; color:#4a6885; padding:2px 10px; border-radius:30px; font-weight:400; margin-left:4px; }
         
         /* ===== 安裝引導橫幅 ===== */
-        .install-banner { background:linear-gradient(135deg, #e8f0fe, #d6e4f7); border-radius:16px; padding:12px 20px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; border:1px solid #c5d7f0; }
-        .install-banner .install-text { display:flex; align-items:center; gap:10px; }
-        .install-banner .install-text i { font-size:1.4rem; color:#2d6ff7; }
-        .install-banner .install-text .title { font-weight:600; color:#1a2b44; font-size:0.95rem; }
-        .install-banner .install-text .sub { font-size:0.75rem; color:#4a6885; display:block; }
-        .install-banner .install-btn { background:#1e2f4a; color:white; border:none; padding:8px 22px; border-radius:40px; cursor:pointer; font-weight:500; font-size:0.9rem; transition:0.15s; white-space:nowrap; }
-        .install-banner .install-btn:hover { background:#0f1e33; }
+        .install-banner { background:linear-gradient(135deg, #1a2b44, #2d4a7a); border-radius:16px; padding:14px 22px; margin-bottom:16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+        .install-banner .install-text { display:flex; align-items:center; gap:12px; }
+        .install-banner .install-text .icon-box { background:rgba(255,255,255,0.15); width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; color:#ffd93d; }
+        .install-banner .install-text .title { font-weight:600; color:white; font-size:0.95rem; }
+        .install-banner .install-text .sub { font-size:0.75rem; color:rgba(255,255,255,0.7); display:block; }
+        .install-banner .install-btn { background:#ffd93d; color:#1a2b44; border:none; padding:8px 24px; border-radius:40px; cursor:pointer; font-weight:600; font-size:0.9rem; transition:0.15s; white-space:nowrap; }
+        .install-banner .install-btn:hover { background:#f5c800; transform:scale(1.02); }
 
-        /* ===== 安裝引導彈窗 ===== */
-        .guide-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:2000; visibility:hidden; opacity:0; transition:0.2s; }
+        /* ===== 安裝引導彈窗（更詳細） ===== */
+        .guide-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:2000; visibility:hidden; opacity:0; transition:0.25s; }
         .guide-overlay.show { visibility:visible; opacity:1; }
-        .guide-box { background:white; max-width:420px; width:90%; padding:30px 28px; border-radius:32px; box-shadow:0 30px 60px rgba(0,0,0,0.3); text-align:center; }
-        .guide-box .guide-icon { font-size:3rem; color:#2d6ff7; margin-bottom:12px; }
-        .guide-box h3 { font-size:1.3rem; color:#0b1a33; margin-bottom:8px; }
-        .guide-box p { color:#4a6885; font-size:0.95rem; line-height:1.6; }
-        .guide-box .guide-steps { text-align:left; background:#f5f8fc; border-radius:16px; padding:16px 20px; margin:16px 0; }
-        .guide-box .guide-steps li { list-style:none; padding:6px 0; font-size:0.9rem; color:#1a2b44; display:flex; align-items:center; gap:10px; border-bottom:1px solid #e8edf4; }
-        .guide-box .guide-steps li:last-child { border-bottom:none; }
-        .guide-box .guide-steps li .step-num { background:#2d6ff7; color:white; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; flex-shrink:0; }
-        .guide-box .guide-steps li .step-icon { font-size:1.2rem; width:28px; text-align:center; flex-shrink:0; }
-        .guide-box .guide-close { background:#1e2f4a; color:white; border:none; padding:10px 36px; border-radius:40px; font-weight:600; cursor:pointer; font-size:0.95rem; margin-top:8px; }
-        .guide-box .guide-close:hover { background:#0f1e33; }
+        .guide-box { background:white; max-width:460px; width:92%; padding:32px 28px; border-radius:32px; box-shadow:0 40px 80px rgba(0,0,0,0.4); max-height:90vh; overflow-y:auto; }
+        .guide-box .guide-header { text-align:center; margin-bottom:20px; }
+        .guide-box .guide-header .big-icon { font-size:3.2rem; color:#2d6ff7; display:block; margin-bottom:8px; }
+        .guide-box .guide-header h3 { font-size:1.4rem; color:#0b1a33; }
+        .guide-box .guide-header p { color:#6b7a8f; font-size:0.9rem; margin-top:4px; }
+        
+        /* 裝置偵測標籤 */
+        .guide-box .device-tag { display:inline-block; background:#e8f0fe; color:#2d6ff7; padding:4px 16px; border-radius:30px; font-size:0.75rem; font-weight:600; margin-bottom:16px; }
+        
+        .guide-box .step-list { display:flex; flex-direction:column; gap:14px; margin:16px 0 20px; }
+        .guide-box .step-item { display:flex; align-items:flex-start; gap:14px; background:#f7faff; padding:14px 16px; border-radius:16px; border-left:4px solid #2d6ff7; }
+        .guide-box .step-item .step-num { background:#2d6ff7; color:white; width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:700; flex-shrink:0; margin-top:2px; }
+        .guide-box .step-item .step-content { flex:1; }
+        .guide-box .step-item .step-content .step-title { font-weight:600; color:#0b1a33; font-size:0.9rem; }
+        .guide-box .step-item .step-content .step-desc { font-size:0.82rem; color:#4a6885; margin-top:2px; }
+        .guide-box .step-item .step-content .step-desc .highlight { background:#ffd93d; padding:1px 8px; border-radius:4px; font-weight:600; color:#1a2b44; }
+        
+        /* 按鈕示意圖 */
+        .guide-box .btn-demo { display:flex; align-items:center; gap:10px; background:#f0f4fc; padding:10px 16px; border-radius:12px; margin-top:4px; flex-wrap:wrap; }
+        .guide-box .btn-demo .btn-icon { font-size:1.4rem; }
+        .guide-box .btn-demo .btn-label { font-size:0.85rem; color:#1a2b44; font-weight:500; }
+        .guide-box .btn-demo .btn-shape { background:#1a2b44; color:white; padding:4px 18px; border-radius:30px; font-size:0.75rem; font-weight:500; }
+
+        .guide-box .guide-footer { display:flex; gap:12px; margin-top:8px; }
+        .guide-box .guide-footer .guide-close { flex:1; background:#1a2b44; color:white; border:none; padding:12px; border-radius:40px; font-weight:600; cursor:pointer; font-size:0.95rem; }
+        .guide-box .guide-footer .guide-close:hover { background:#0f1e33; }
+        .guide-box .guide-footer .guide-skip { background:transparent; color:#6b7a8f; border:none; padding:12px; border-radius:40px; font-weight:500; cursor:pointer; font-size:0.9rem; }
+
+        @media (max-width:600px) { 
+            .app-container { padding:16px; } 
+            .token-section { flex-wrap:wrap; } 
+            .token-section input { width:100%; } 
+            .work-grid { grid-template-columns:1fr; } 
+            .work-card .work-month-row { flex-wrap:wrap; } 
+            .work-card .work-note-row { flex-wrap:wrap; } 
+            .install-banner { flex-direction:column; align-items:stretch; text-align:center; } 
+            .install-banner .install-btn { text-align:center; }
+            .guide-box { padding:24px 18px; }
+            .guide-box .step-item { padding:12px 14px; }
+        }
 
         /* ===== 其餘樣式 ===== */
         .token-section { display:flex; align-items:center; gap:12px; background:#f0f4fe; padding:6px 16px 6px 20px; border-radius:60px; flex-wrap:wrap; }
@@ -126,8 +155,6 @@
         .update-banner .update-buttons .btn-later { background:rgba(255,255,255,0.15); color:white; }
         .update-banner .update-buttons .btn-later:hover { background:rgba(255,255,255,0.25); }
         @media (max-width:600px) { .update-banner { padding:14px 20px; bottom:10px; } .update-banner .update-text { font-size:0.8rem; } .update-banner .update-buttons button { padding:6px 16px; font-size:0.75rem; } }
-
-        @media (max-width:600px) { .app-container { padding:16px; } .token-section { flex-wrap:wrap; } .token-section input { width:100%; } .work-grid { grid-template-columns:1fr; } .work-card .work-month-row { flex-wrap:wrap; } .work-card .work-note-row { flex-wrap:wrap; } .install-banner { flex-direction:column; align-items:stretch; text-align:center; } .install-banner .install-btn { text-align:center; } }
     </style>
 </head>
 <body>
@@ -144,18 +171,29 @@
         </div>
     </div>
 
-    <!-- ===== 安裝引導彈窗 ===== -->
+    <!-- ===== 詳細安裝引導彈窗 ===== -->
     <div class="guide-overlay" id="guideOverlay">
         <div class="guide-box">
-            <div class="guide-icon"><i class="fas fa-mobile-alt"></i></div>
-            <h3>📱 加入主畫面</h3>
-            <p>像 App 一樣快速開啟 FHAC 看板</p>
-            <ul class="guide-steps">
-                <li><span class="step-num">1</span> 點擊瀏覽器的 <span style="font-weight:600;">分享</span> 或 <span style="font-weight:600;">選單</span> 按鈕</li>
-                <li><span class="step-num">2</span> 選擇 <span style="font-weight:600; color:#2d6ff7;">「加入主畫面」</span></li>
-                <li><span class="step-num">3</span> 點擊 <span style="font-weight:600; color:#2d6ff7;">「新增」</span> 完成！</li>
-            </ul>
-            <button class="guide-close" id="guideCloseBtn">我知道了</button>
+            <div class="guide-header">
+                <span class="big-icon">📱</span>
+                <h3>加入主畫面</h3>
+                <p>像 App 一樣快速開啟 FHAC 看板</p>
+            </div>
+
+            <!-- 裝置標籤（由 JS 動態顯示） -->
+            <div style="text-align:center;">
+                <span class="device-tag" id="deviceTag">📱 手機</span>
+            </div>
+
+            <!-- 步驟列表 -->
+            <div class="step-list" id="stepList">
+                <!-- 由 JavaScript 動態生成 -->
+            </div>
+
+            <div class="guide-footer">
+                <button class="guide-close" id="guideCloseBtn">我知道了</button>
+                <button class="guide-skip" id="guideSkipBtn">不再顯示</button>
+            </div>
         </div>
     </div>
 
@@ -176,13 +214,13 @@
         <!-- ===== 安裝引導橫幅 ===== -->
         <div class="install-banner" id="installBanner">
             <div class="install-text">
-                <i class="fas fa-mobile-alt"></i>
+                <div class="icon-box"><i class="fas fa-mobile-alt"></i></div>
                 <div>
                     <span class="title">📱 將 FHAC 加入主畫面</span>
                     <span class="sub">像 App 一樣一鍵開啟，使用更方便</span>
                 </div>
             </div>
-            <button class="install-btn" id="installGuideBtn"><i class="fas fa-plus-circle"></i> 加入主畫面</button>
+            <button class="install-btn" id="installGuideBtn"><i class="fas fa-plus-circle"></i> 查看教學</button>
         </div>
 
         <div class="mode-tabs">
@@ -248,7 +286,7 @@
         // ================================================================
         //  🔥 版本號 - 每次更新時只改這裡！ 🔥
         // ================================================================
-        const APP_VERSION = '2026.07.22.003';
+        const APP_VERSION = '2026.07.22.004';
 
         // 版本號會自動顯示在標題旁邊，並用於更新檢測
         // ================================================================
@@ -330,21 +368,129 @@
         }
 
         // ================================================================
-        //  安裝引導功能
+        //  安裝引導功能（詳細版）
         // ================================================================
+        
+        // 偵測裝置類型
+        function detectDevice() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+                return 'iphone';
+            }
+            if (/android/i.test(ua)) {
+                return 'android';
+            }
+            return 'desktop';
+        }
+
+        // 取得不同裝置的步驟
+        function getSteps(device) {
+            if (device === 'iphone') {
+                return {
+                    tag: '🍎 iPhone / iPad',
+                    steps: [
+                        { title: '點擊「分享」按鈕', desc: '在 Safari 瀏覽器底部，找到 <span class="highlight">分享圖示</span>（方塊+箭頭）' },
+                        { title: '選擇「加入主畫面」', desc: '在選單中滑動找到 <span class="highlight">「加入主畫面」</span> 並點擊' },
+                        { title: '點擊「新增」完成', desc: '確認名稱後，點擊右上角 <span class="highlight">「新增」</span> 即可' }
+                    ],
+                    demo: '📤 分享 → ⭐ 加入主畫面 → ✅ 新增'
+                };
+            } else if (device === 'android') {
+                return {
+                    tag: '🤖 Android 手機',
+                    steps: [
+                        { title: '點擊「⋮」選單', desc: '在 Chrome 瀏覽器右上角，點擊 <span class="highlight">三個點</span> 的選單按鈕' },
+                        { title: '選擇「加到主畫面」', desc: '在選單中找到 <span class="highlight">「加到主畫面」</span> 並點擊' },
+                        { title: '點擊「新增」完成', desc: '確認名稱後，點擊 <span class="highlight">「新增」</span> 即可' }
+                    ],
+                    demo: '⋮ 選單 → ⭐ 加到主畫面 → ✅ 新增'
+                };
+            } else {
+                return {
+                    tag: '💻 電腦',
+                    steps: [
+                        { title: '將此頁面加入書籤', desc: '按 <span class="highlight">Ctrl+D</span> (Windows) 或 <span class="highlight">Cmd+D</span> (Mac) 加入書籤' },
+                        { title: '從書籤快速開啟', desc: '下次從書籤列點擊即可快速開啟 FHAC' },
+                        { title: '（手機專用）', desc: '手機使用者請用 <span class="highlight">手機瀏覽器</span> 開啟此頁面' }
+                    ],
+                    demo: '⭐ 加入書籤 → 📂 從書籤開啟'
+                };
+            }
+        }
+
+        // 顯示引導彈窗
+        function showGuide() {
+            var device = detectDevice();
+            var data = getSteps(device);
+            var overlay = document.getElementById('guideOverlay');
+            var tag = document.getElementById('deviceTag');
+            var list = document.getElementById('stepList');
+
+            tag.textContent = data.tag;
+
+            var html = '';
+            for (var i = 0; i < data.steps.length; i++) {
+                var s = data.steps[i];
+                html += '<div class="step-item">' +
+                    '<div class="step-num">' + (i + 1) + '</div>' +
+                    '<div class="step-content">' +
+                    '<div class="step-title">' + s.title + '</div>' +
+                    '<div class="step-desc">' + s.desc + '</div>' +
+                    '</div></div>';
+            }
+
+            // 加入示意圖
+            if (data.demo) {
+                html += '<div class="btn-demo">' +
+                    '<span class="btn-icon">👉</span>' +
+                    '<span class="btn-label">' + data.demo + '</span>' +
+                    '</div>';
+            }
+
+            list.innerHTML = html;
+            overlay.classList.add('show');
+        }
+
+        function hideGuide() {
+            document.getElementById('guideOverlay').classList.remove('show');
+        }
+
+        // ================================================================
+        //  安裝引導事件
+        // ================================================================
+        var guideShown = false;
+
         document.getElementById('installGuideBtn').addEventListener('click', function() {
-            document.getElementById('guideOverlay').classList.add('show');
+            showGuide();
+            guideShown = true;
         });
 
         document.getElementById('guideCloseBtn').addEventListener('click', function() {
-            document.getElementById('guideOverlay').classList.remove('show');
+            hideGuide();
+        });
+
+        document.getElementById('guideSkipBtn').addEventListener('click', function() {
+            hideGuide();
+            // 隱藏橫幅
+            document.getElementById('installBanner').style.display = 'none';
         });
 
         document.getElementById('guideOverlay').addEventListener('click', function(e) {
             if (e.target === this) {
-                this.classList.remove('show');
+                hideGuide();
             }
         });
+
+        // 首次使用自動顯示（只顯示一次）
+        (function() {
+            var hasSeen = localStorage.getItem('fhac_guide_seen');
+            if (!hasSeen) {
+                setTimeout(function() {
+                    showGuide();
+                    localStorage.setItem('fhac_guide_seen', 'true');
+                }, 1500);
+            }
+        })();
 
         // ================================================================
         //  設定
@@ -1067,7 +1213,7 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入 (v' + APP_VERSION + ')');
-        console.log('📱 點擊「加入主畫面」可將 FHAC 加到手機桌面');
+        console.log('📱 點擊「查看教學」可學習如何加入主畫面');
     </script>
 </body>
 </html>
