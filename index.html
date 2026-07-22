@@ -2,11 +2,10 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
     <title>FHAC · 團隊協作看板</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ===== 全局樣式 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -28,8 +27,6 @@
             padding: 24px 28px 40px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
         }
-
-        /* ===== 頭部 ===== */
         .app-header {
             display: flex;
             flex-wrap: wrap;
@@ -111,8 +108,6 @@
             background: #d5f0e0;
             color: #0b5532;
         }
-
-        /* ===== 模式切換 ===== */
         .mode-tabs {
             display: flex;
             gap: 12px;
@@ -138,11 +133,11 @@
             margin-right: 8px;
         }
 
-        /* ===== 部門切換（共用） ===== */
+        /* ===== 部門按鈕 - 手機三行 ===== */
         .dept-tabs {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px 10px;
+            gap: 6px 8px;
             margin: 6px 0 18px;
             padding: 4px 0 10px;
             border-bottom: 1px dashed #dfe6ef;
@@ -150,20 +145,21 @@
         .dept-tab {
             background: white;
             border: 1px solid #d4dce8;
-            padding: 6px 22px;
+            padding: 5px 14px;
             border-radius: 40px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 500;
             color: #1f334a;
             cursor: pointer;
+            white-space: nowrap;
         }
         .dept-tab .count-badge {
             background: #2d6ff7;
             color: white;
             border-radius: 20px;
             padding: 0 8px;
-            font-size: 0.7rem;
-            margin-left: 6px;
+            font-size: 0.65rem;
+            margin-left: 4px;
             font-weight: 600;
         }
         .dept-tab.active {
@@ -181,7 +177,21 @@
             background: #142433;
         }
 
-        /* ===== 備忘錄卡片 ===== */
+        /* ===== 手機優化：三行顯示 ===== */
+        @media (max-width: 600px) {
+            .dept-tabs {
+                gap: 4px 6px;
+            }
+            .dept-tab {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+            .dept-tab .count-badge {
+                font-size: 0.6rem;
+                padding: 0 6px;
+            }
+        }
+
         .summary-stats {
             background: #f8faff;
             padding: 12px 20px;
@@ -303,10 +313,10 @@
             display: none !important;
         }
 
-        /* ===== 工作進度（固定兩項） ===== */
+        /* ===== 工作進度 ===== */
         .work-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 20px;
             margin-top: 10px;
         }
@@ -321,7 +331,7 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1px #d0dce8;
         }
         .work-card .work-title {
-            font-size: 1.05rem;
+            font-size: 1.0rem;
             font-weight: 600;
             color: #0b1e30;
             margin-bottom: 10px;
@@ -331,7 +341,7 @@
         }
         .work-card .work-title i {
             color: #2d6ff7;
-            font-size: 1.1rem;
+            font-size: 1.0rem;
         }
         .work-card .work-month-row {
             display: flex;
@@ -341,6 +351,7 @@
             background: #f0f6fe;
             padding: 8px 16px 8px 18px;
             border-radius: 60px;
+            margin-bottom: 8px;
         }
         .work-card .work-month-row label {
             font-size: 0.85rem;
@@ -380,7 +391,51 @@
             margin-left: 4px;
         }
 
-        /* ===== 模態框 ===== */
+        /* ===== 備註欄位 ===== */
+        .work-card .work-note-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 4px 16px 4px 18px;
+        }
+        .work-card .work-note-row label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #4a6885;
+        }
+        .work-card .work-note-row input {
+            border: 1px solid #d4dce8;
+            background: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            flex: 1;
+            min-width: 120px;
+            outline: none;
+        }
+        .work-card .work-note-row input:focus {
+            outline: 2px solid #2d6ff7;
+        }
+        .work-card .work-note-row .save-note-btn {
+            background: #6b8bb0;
+            color: white;
+            border: none;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .work-card .work-note-row .save-note-btn:hover {
+            background: #1f4a7a;
+        }
+        .work-card .work-note-row .note-status {
+            font-size: 0.7rem;
+            color: #1e7b4b;
+        }
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -472,12 +527,17 @@
             .work-grid {
                 grid-template-columns: 1fr;
             }
+            .work-card .work-month-row {
+                flex-wrap: wrap;
+            }
+            .work-card .work-note-row {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- 頭部 -->
         <div class="app-header">
             <div class="app-title">FHAC <small>· 團隊協作</small></div>
             <div class="token-section">
@@ -488,13 +548,11 @@
             </div>
         </div>
 
-        <!-- 模式切換 -->
         <div class="mode-tabs">
             <button class="mode-tab active" data-mode="memo"><i class="fas fa-sticky-note"></i> 備忘錄</button>
             <button class="mode-tab" data-mode="progress"><i class="fas fa-chart-line"></i> 工作進度</button>
         </div>
 
-        <!-- ===== 備忘錄 ===== -->
         <div id="memoSection">
             <div class="dept-tabs" id="memoDeptTabs"></div>
             <div class="dept-header">
@@ -504,17 +562,15 @@
             <div id="memoCardGrid"><div class="loading-spinner"><i class="fas fa-cloud-upload-alt"></i>請輸入 Token 後點擊「載入資料」</div></div>
         </div>
 
-        <!-- ===== 工作進度（固定兩項） ===== -->
         <div id="progressSection" class="hidden">
             <div class="dept-tabs" id="progressDeptTabs"></div>
             <div style="margin: 10px 0 16px; color:#4a6885; font-size:0.9rem;">
-                <i class="fas fa-info-circle"></i> 每個部門固定兩項工作，可修改處理進度月份
+                <i class="fas fa-info-circle"></i> 每個部門固定工作項目，可修改處理進度月份與備註
             </div>
             <div class="work-grid" id="progressGrid"></div>
         </div>
     </div>
 
-    <!-- ===== 模態框：備忘錄 ===== -->
     <div class="modal-overlay" id="memoModal">
         <div class="modal-box">
             <h3 id="memoModalTitle"><i class="fas fa-pen"></i> 新增備忘項目</h3>
@@ -539,7 +595,6 @@
         </div>
     </div>
 
-    <!-- ===== 模態框：刪除 ===== -->
     <div class="modal-overlay" id="deleteModal">
         <div class="modal-box">
             <h3><i class="fas fa-trash-alt"></i> 刪除項目</h3>
@@ -560,21 +615,84 @@
         const GITHUB_REPO = 'FHAC';
         const DATA_FILE = 'data.json';
         const BRANCH = 'main';
-        const DEPARTMENTS = ['總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '心悅', '喜悅', '欣悅', '樂膳'];
         const DELETE_PASSWORD = 'yuki';
         const STORAGE_KEY = 'fhac_github_token';
 
-        // 固定工作項目
-        const WORK_ITEMS = [
-            { id: 'work1', name: '發票核實及檢視收款情況' },
-            { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
-        ];
+        // ================================================================
+        //  部門列表（會計部在最前面，青濤在心悅前面）
+        // ================================================================
+        const DEPARTMENTS = ['會計部', '總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
+
+        // ================================================================
+        //  各部門固定工作項目
+        // ================================================================
+        const WORK_ITEMS_BY_DEPT = {
+            '會計部': [
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+            ],
+            '總會': [
+                { id: 'work1', name: '銷售發票分攤表（已整理到（）月）' },
+                { id: 'work2', name: '義賣活動分攤表（已整理到（）月）' },
+                { id: 'work3', name: '寄賣店分攤表（已整理到（）月）' }
+            ],
+            '創藝': [
+                { id: 'work1', name: '銷售分攤表（新濠）' },
+                { id: 'work2', name: '銷售現金交回情況（新濠）' },
+                { id: 'work3', name: '銷售分攤表（欣悅）' },
+                { id: 'work4', name: '銷售現金交回情況（欣悅）' }
+            ],
+            '寶利': [
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+            ],
+            '康盈': [
+                { id: 'work1', name: '自定義項目 1' },
+                { id: 'work2', name: '自定義項目 2' }
+            ],
+            '怡樂': [
+                { id: 'work1', name: '自定義項目 1' },
+                { id: 'work2', name: '自定義項目 2' }
+            ],
+            '朗程': [
+                { id: 'work1', name: '自定義項目 1' },
+                { id: 'work2', name: '自定義項目 2' }
+            ],
+            '寶翠': [
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+            ],
+            '青濤': [
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+            ],
+            '心悅': [
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+            ],
+            '喜悅': [
+                { id: 'work1', name: '自定義項目 1' },
+                { id: 'work2', name: '自定義項目 2' }
+            ],
+            '欣悅': [
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+            ],
+            '樂膳': [
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+            ]
+        };
+
+        function getWorkItemsForDept(dept) {
+            return WORK_ITEMS_BY_DEPT[dept] || WORK_ITEMS_BY_DEPT['寶利'];
+        }
 
         // ================================================================
         //  全域狀態
         // ================================================================
         let currentMode = 'memo';
-        let currentDept = '總會';
+        let currentDept = '會計部';
         let deleteTarget = null;
         let editTarget = null;
         let githubToken = '';
@@ -606,31 +724,20 @@
         const deletePassword = $('deletePassword');
 
         // ================================================================
-        //  Token 儲存 / 讀取
+        //  Token 儲存
         // ================================================================
         function saveTokenToStorage(token) {
-            try {
-                localStorage.setItem(STORAGE_KEY, token);
-                return true;
-            } catch (e) {
-                return false;
-            }
+            try { localStorage.setItem(STORAGE_KEY, token); return true; } catch (e) { return false; }
         }
 
         function getTokenFromStorage() {
-            try {
-                return localStorage.getItem(STORAGE_KEY) || '';
-            } catch (e) {
-                return '';
-            }
+            try { return localStorage.getItem(STORAGE_KEY) || ''; } catch (e) { return ''; }
         }
 
         // ================================================================
         //  工具函數
         // ================================================================
-        function genId() {
-            return Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
-        }
+        function genId() { return Date.now().toString(36) + Math.random().toString(36).substring(2, 6); }
 
         function setStatus(text, type = '') {
             tokenStatus.innerHTML = text;
@@ -645,15 +752,12 @@
         }
 
         // ================================================================
-        //  GitHub API
+        //  GitHub API（含 409 自動重試）
         // ================================================================
         async function fetchDataFromGitHub(token) {
             const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?ref=${BRANCH}`;
             const resp = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                }
+                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
             });
             if (!resp.ok) {
                 if (resp.status === 404) return null;
@@ -663,9 +767,7 @@
             const data = await resp.json();
             const binary = atob(data.content);
             const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) {
-                bytes[i] = binary.charCodeAt(i);
-            }
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
             const text = new TextDecoder('utf-8').decode(bytes);
             return { sha: data.sha, content: JSON.parse(text) };
         }
@@ -680,23 +782,73 @@
                 binary += String.fromCharCode(bytes[i]);
             }
             const content = btoa(binary);
-            const payload = { message: `更新資料 ${new Date().toLocaleString()}`, content, branch: BRANCH };
+
+            const payload = {
+                message: `更新資料 ${new Date().toLocaleString()}`,
+                content,
+                branch: BRANCH
+            };
             if (sha) payload.sha = sha;
-            const resp = await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
-            });
-            if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                throw new Error(`儲存失敗 (${resp.status}): ${err.message || resp.statusText}`);
+
+            try {
+                const resp = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    if (resp.status === 409) {
+                        console.warn('⚠️ 檔案衝突，重新獲取最新版本...');
+                        const latest = await fetchDataFromGitHub(token);
+                        if (latest) {
+                            payload.sha = latest.sha;
+                            const retryResp = await fetch(url, {
+                                method: 'PUT',
+                                headers: {
+                                    'Authorization': `token ${token}`,
+                                    'Accept': 'application/vnd.github.v3+json',
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(payload),
+                            });
+                            if (!retryResp.ok) {
+                                const retryErr = await retryResp.json().catch(() => ({}));
+                                throw new Error(`儲存失敗 (${retryResp.status}): ${retryErr.message || retryResp.statusText}`);
+                            }
+                            const result = await retryResp.json();
+                            return result.content.sha;
+                        } else {
+                            delete payload.sha;
+                            const retryResp = await fetch(url, {
+                                method: 'PUT',
+                                headers: {
+                                    'Authorization': `token ${token}`,
+                                    'Accept': 'application/vnd.github.v3+json',
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify(payload),
+                            });
+                            if (!retryResp.ok) {
+                                const retryErr = await retryResp.json().catch(() => ({}));
+                                throw new Error(`儲存失敗 (${retryResp.status}): ${retryErr.message || retryResp.statusText}`);
+                            }
+                            const result = await retryResp.json();
+                            return result.content.sha;
+                        }
+                    }
+                    throw new Error(`儲存失敗 (${resp.status}): ${err.message || resp.statusText}`);
+                }
+                const result = await resp.json();
+                return result.content.sha;
+            } catch (err) {
+                throw err;
             }
-            const result = await resp.json();
-            return result.content.sha;
         }
 
         // ================================================================
@@ -712,7 +864,10 @@
                     workProgressData = {};
                     DEPARTMENTS.forEach(d => {
                         workProgressData[d] = {};
-                        WORK_ITEMS.forEach(w => { workProgressData[d][w.id] = ''; });
+                        const items = getWorkItemsForDept(d);
+                        items.forEach(w => {
+                            workProgressData[d][w.id] = { month: '', note: '' };
+                        });
                     });
                     setStatus('<i class="fas fa-file"></i> 新檔案已建立', '');
                     await saveAllData(token);
@@ -726,10 +881,19 @@
                     DEPARTMENTS.forEach(d => {
                         if (!workProgressData[d]) {
                             workProgressData[d] = {};
-                            WORK_ITEMS.forEach(w => { workProgressData[d][w.id] = ''; });
+                            const items = getWorkItemsForDept(d);
+                            items.forEach(w => {
+                                workProgressData[d][w.id] = { month: '', note: '' };
+                            });
                         } else {
-                            WORK_ITEMS.forEach(w => {
-                                if (!workProgressData[d][w.id]) workProgressData[d][w.id] = '';
+                            const items = getWorkItemsForDept(d);
+                            items.forEach(w => {
+                                if (!workProgressData[d][w.id]) {
+                                    workProgressData[d][w.id] = { month: '', note: '' };
+                                } else if (typeof workProgressData[d][w.id] === 'string') {
+                                    // 相容舊資料（只有月份）
+                                    workProgressData[d][w.id] = { month: workProgressData[d][w.id], note: '' };
+                                }
                             });
                         }
                     });
@@ -753,7 +917,7 @@
                 return true;
             } catch (err) {
                 console.error(err);
-                setStatus(`<i class="fas fa-exclamation-circle"></i> 儲存失敗: ${err.message}`, 'error');
+                setStatus(`<i class="fas fa-exclamation-circle"></i> ${err.message}`, 'error');
                 return false;
             }
         }
@@ -834,7 +998,7 @@
         }
 
         // ================================================================
-        //  渲染：工作進度
+        //  渲染：工作進度（含備註）
         // ================================================================
         function renderProgressDeptTabs() {
             progressDeptTabs.innerHTML = '';
@@ -856,9 +1020,12 @@
 
         function renderProgressCards() {
             const deptData = workProgressData[currentDept] || {};
+            const items = getWorkItemsForDept(currentDept);
             let html = '';
-            WORK_ITEMS.forEach(work => {
-                const monthVal = deptData[work.id] || '';
+            items.forEach(work => {
+                const data = deptData[work.id] || { month: '', note: '' };
+                const monthVal = data.month || '';
+                const noteVal = data.note || '';
                 html += `
                     <div class="work-card" data-work-id="${work.id}">
                         <div class="work-title">
@@ -871,11 +1038,18 @@
                             <button class="save-month-btn" data-work-id="${work.id}">儲存</button>
                             <span class="month-status" id="status-${work.id}"></span>
                         </div>
+                        <div class="work-note-row">
+                            <label><i class="fas fa-sticky-note"></i> 備註</label>
+                            <input type="text" class="work-note-input" placeholder="輸入備註..." value="${escapeHtml(noteVal)}" />
+                            <button class="save-note-btn" data-work-id="${work.id}">儲存</button>
+                            <span class="note-status" id="note-status-${work.id}"></span>
+                        </div>
                     </div>
                 `;
             });
             progressGrid.innerHTML = html;
 
+            // 儲存月份
             progressGrid.querySelectorAll('.save-month-btn').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     const workId = this.dataset.workId;
@@ -888,10 +1062,11 @@
                         statusEl.style.color = '#b33';
                         return;
                     }
-                    if (!workProgressData[currentDept]) {
-                        workProgressData[currentDept] = {};
+                    if (!workProgressData[currentDept]) workProgressData[currentDept] = {};
+                    if (!workProgressData[currentDept][workId]) {
+                        workProgressData[currentDept][workId] = { month: '', note: '' };
                     }
-                    workProgressData[currentDept][workId] = val;
+                    workProgressData[currentDept][workId].month = val;
                     const ok = await saveAllData(githubToken);
                     if (ok) {
                         statusEl.textContent = '✅ 已儲存';
@@ -904,11 +1079,46 @@
                 });
             });
 
+            // 儲存備註
+            progressGrid.querySelectorAll('.save-note-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const workId = this.dataset.workId;
+                    const card = this.closest('.work-card');
+                    const input = card.querySelector('.work-note-input');
+                    const statusEl = document.getElementById(`note-status-${workId}`);
+                    const val = input.value.trim();
+                    if (!workProgressData[currentDept]) workProgressData[currentDept] = {};
+                    if (!workProgressData[currentDept][workId]) {
+                        workProgressData[currentDept][workId] = { month: '', note: '' };
+                    }
+                    workProgressData[currentDept][workId].note = val;
+                    const ok = await saveAllData(githubToken);
+                    if (ok) {
+                        statusEl.textContent = '✅ 已儲存';
+                        statusEl.style.color = '#1e7b4b';
+                        setTimeout(() => { statusEl.textContent = ''; }, 2000);
+                    } else {
+                        statusEl.textContent = '❌ 儲存失敗';
+                        statusEl.style.color = '#b33';
+                    }
+                });
+            });
+
+            // Enter 觸發儲存
             progressGrid.querySelectorAll('.work-month-input').forEach(input => {
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         const card = input.closest('.work-card');
                         const btn = card.querySelector('.save-month-btn');
+                        if (btn) btn.click();
+                    }
+                });
+            });
+            progressGrid.querySelectorAll('.work-note-input').forEach(input => {
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const card = input.closest('.work-card');
+                        const btn = card.querySelector('.save-note-btn');
                         if (btn) btn.click();
                     }
                 });
@@ -956,9 +1166,8 @@
             const name = memoName.value.trim();
             if (!name) { alert('請輸入項目名稱'); return; }
             const progress = memoProgress.value;
-            const note = memoNote.value.trim(); // 非必填，可以空白
+            const note = memoNote.value.trim();
             const status = memoStatus.value;
-            // ✅ 移除備註必填檢查
             if (editTarget) {
                 const idx = memoData[editTarget.dept].findIndex(i => i.id === editTarget.item.id);
                 if (idx !== -1) {
@@ -997,7 +1206,7 @@
         });
 
         // ================================================================
-        //  載入按鈕（會自動儲存 Token）
+        //  載入按鈕
         // ================================================================
         loadBtn.addEventListener('click', async () => {
             const token = tokenInput.value.trim();
@@ -1017,7 +1226,7 @@
         });
 
         // ================================================================
-        //  自動載入（如果之前有儲存 Token）
+        //  自動載入
         // ================================================================
         async function autoLoad() {
             const savedToken = getTokenFromStorage();
@@ -1038,8 +1247,9 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入');
-        console.log(`📁 資料將儲存在: ${GITHUB_USER}/${GITHUB_REPO}/${DATA_FILE}`);
-        console.log('📝 備註已改為非必填');
+        console.log('📋 部門：會計部(新) + 青濤(新)');
+        console.log('📝 工作進度已加入備註欄位');
+        console.log('🔧 康盈/怡樂/朗程/喜悅 為自定義項目');
     </script>
 </body>
 </html>
