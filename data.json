@@ -2,13 +2,6 @@
   "memoData": {
     "總會": [
       {
-        "id": "mruqrc8x0tyv",
-        "name": "學生未有分數",
-        "progress": "未完成",
-        "note": "欠簽名",
-        "status": "正常"
-      },
-      {
         "id": "mrvjpu6y3epe",
         "name": "测试",
         "progress": "已完成",
@@ -88,5 +81,5 @@
       "work2": ""
     }
   },
-  "updatedAt": "2026-07-22T04:31:30.810Z"
+  "updatedAt": "2026-07-22T04:31:36.009Z"
 }
