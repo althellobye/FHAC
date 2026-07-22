@@ -614,10 +614,10 @@
         const DEPARTMENTS = ['會計部', '總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
 
         // ================================================================
-        //  各部門固定工作項目（會計部無工作項目）
+        //  各部門固定工作項目
         // ================================================================
         const WORK_ITEMS_BY_DEPT = {
-            '會計部': [],  // ← 空陣列，不顯示任何工作項目
+            '會計部': [],
             '總會': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
@@ -635,7 +635,9 @@
             ],
             '寶利': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
-                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
+                { id: 'work3', name: '服務使用者津貼應付表核對' },
+                { id: 'work4', name: '服務使用者戶口核對' }
             ],
             '康盈': [
                 { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
@@ -726,14 +728,14 @@
         // ================================================================
         function genId() { return Date.now().toString(36) + Math.random().toString(36).substring(2, 6); }
 
-        function setStatus(text, type = '') {
+        function setStatus(text, type) {
             tokenStatus.innerHTML = text;
             tokenStatus.className = 'token-status' + (type ? ' ' + type : '');
         }
 
         function escapeHtml(text) {
             if (!text) return '';
-            const div = document.createElement('div');
+            var div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
@@ -742,46 +744,46 @@
         //  GitHub API
         // ================================================================
         async function fetchDataFromGitHub(token) {
-            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?ref=${BRANCH}`;
-            const resp = await fetch(url, {
-                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' + BRANCH;
+            var resp = await fetch(url, {
+                headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
             });
             if (!resp.ok) {
                 if (resp.status === 404) return null;
-                const err = await resp.json().catch(() => ({}));
-                throw new Error(`GitHub API 錯誤 (${resp.status)}: ${err.message || resp.statusText}`);
+                var err = await resp.json().catch(function() { return {}; });
+                throw new Error('GitHub API 錯誤 (' + resp.status + '): ' + (err.message || resp.statusText));
             }
-            const data = await resp.json();
-            const binary = atob(data.content);
-            const bytes = new Uint8Array(binary.length);
-            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-            const text = new TextDecoder('utf-8').decode(bytes);
+            var data = await resp.json();
+            var binary = atob(data.content);
+            var bytes = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            var text = new TextDecoder('utf-8').decode(bytes);
             return { sha: data.sha, content: JSON.parse(text) };
         }
 
         async function saveDataToGitHub(token, data, sha) {
-            const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?ref=${BRANCH}`;
-            const jsonStr = JSON.stringify(data, null, 2);
-            const encoder = new TextEncoder();
-            const bytes = encoder.encode(jsonStr);
-            let binary = '';
-            for (let i = 0; i < bytes.length; i++) {
+            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' + BRANCH;
+            var jsonStr = JSON.stringify(data, null, 2);
+            var encoder = new TextEncoder();
+            var bytes = encoder.encode(jsonStr);
+            var binary = '';
+            for (var i = 0; i < bytes.length; i++) {
                 binary += String.fromCharCode(bytes[i]);
             }
-            const content = btoa(binary);
+            var content = btoa(binary);
 
-            const payload = {
-                message: `更新資料 ${new Date().toLocaleString()}`,
-                content,
+            var payload = {
+                message: '更新資料 ' + new Date().toLocaleString(),
+                content: content,
                 branch: BRANCH
             };
             if (sha) payload.sha = sha;
 
             try {
-                const resp = await fetch(url, {
+                var resp = await fetch(url, {
                     method: 'PUT',
                     headers: {
-                        'Authorization': `token ${token}`,
+                        'Authorization': 'token ' + token,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json',
                     },
@@ -789,49 +791,49 @@
                 });
 
                 if (!resp.ok) {
-                    const err = await resp.json().catch(() => ({}));
+                    var err = await resp.json().catch(function() { return {}; });
                     if (resp.status === 409) {
                         console.warn('⚠️ 檔案衝突，重新獲取最新版本...');
-                        const latest = await fetchDataFromGitHub(token);
+                        var latest = await fetchDataFromGitHub(token);
                         if (latest) {
                             payload.sha = latest.sha;
-                            const retryResp = await fetch(url, {
+                            var retryResp = await fetch(url, {
                                 method: 'PUT',
                                 headers: {
-                                    'Authorization': `token ${token}`,
+                                    'Authorization': 'token ' + token,
                                     'Accept': 'application/vnd.github.v3+json',
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify(payload),
                             });
                             if (!retryResp.ok) {
-                                const retryErr = await retryResp.json().catch(() => ({}));
-                                throw new Error(`儲存失敗 (${retryResp.status}): ${retryErr.message || retryResp.statusText}`);
+                                var retryErr = await retryResp.json().catch(function() { return {}; });
+                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp.statusText));
                             }
-                            const result = await retryResp.json();
+                            var result = await retryResp.json();
                             return result.content.sha;
                         } else {
                             delete payload.sha;
-                            const retryResp = await fetch(url, {
+                            var retryResp = await fetch(url, {
                                 method: 'PUT',
                                 headers: {
-                                    'Authorization': `token ${token}`,
+                                    'Authorization': 'token ' + token,
                                     'Accept': 'application/vnd.github.v3+json',
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify(payload),
                             });
                             if (!retryResp.ok) {
-                                const retryErr = await retryResp.json().catch(() => ({}));
-                                throw new Error(`儲存失敗 (${retryResp.status}): ${retryErr.message || retryResp.statusText}`);
+                                var retryErr = await retryResp.json().catch(function() { return {}; });
+                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp.statusText));
                             }
-                            const result = await retryResp.json();
+                            var result = await retryResp.json();
                             return result.content.sha;
                         }
                     }
-                    throw new Error(`儲存失敗 (${resp.status}): ${err.message || resp.statusText}`);
+                    throw new Error('儲存失敗 (' + resp.status + '): ' + (err.message || resp.statusText));
                 }
-                const result = await resp.json();
+                var result = await resp.json();
                 return result.content.sha;
             } catch (err) {
                 throw err;
@@ -844,66 +846,75 @@
         async function loadData(token) {
             setStatus('<i class="fas fa-spinner fa-pulse"></i> 載入中...', 'loading');
             try {
-                const result = await fetchDataFromGitHub(token);
+                var result = await fetchDataFromGitHub(token);
                 if (result === null) {
                     memoData = {};
-                    DEPARTMENTS.forEach(d => { memoData[d] = []; });
+                    for (var d = 0; d < DEPARTMENTS.length; d++) {
+                        memoData[DEPARTMENTS[d]] = [];
+                    }
                     workProgressData = {};
-                    DEPARTMENTS.forEach(d => {
-                        workProgressData[d] = {};
-                        const items = getWorkItemsForDept(d);
-                        items.forEach(w => {
-                            workProgressData[d][w.id] = { month: '', note: '' };
-                        });
-                    });
+                    for (var d2 = 0; d2 < DEPARTMENTS.length; d2++) {
+                        var dept = DEPARTMENTS[d2];
+                        workProgressData[dept] = {};
+                        var items = getWorkItemsForDept(dept);
+                        for (var w = 0; w < items.length; w++) {
+                            workProgressData[dept][items[w].id] = { month: '', note: '' };
+                        }
+                    }
                     setStatus('<i class="fas fa-file"></i> 新檔案已建立', '');
                     await saveAllData(token);
                 } else {
-                    const parsed = result.content;
+                    var parsed = result.content;
                     memoData = parsed.memoData || {};
-                    DEPARTMENTS.forEach(d => {
-                        if (!memoData[d]) memoData[d] = [];
-                    });
+                    for (var d3 = 0; d3 < DEPARTMENTS.length; d3++) {
+                        var dept2 = DEPARTMENTS[d3];
+                        if (!memoData[dept2]) memoData[dept2] = [];
+                    }
                     workProgressData = parsed.workProgressData || {};
-                    DEPARTMENTS.forEach(d => {
-                        if (!workProgressData[d]) {
-                            workProgressData[d] = {};
-                            const items = getWorkItemsForDept(d);
-                            items.forEach(w => {
-                                workProgressData[d][w.id] = { month: '', note: '' };
-                            });
+                    for (var d4 = 0; d4 < DEPARTMENTS.length; d4++) {
+                        var dept3 = DEPARTMENTS[d4];
+                        if (!workProgressData[dept3]) {
+                            workProgressData[dept3] = {};
+                            var items2 = getWorkItemsForDept(dept3);
+                            for (var w2 = 0; w2 < items2.length; w2++) {
+                                workProgressData[dept3][items2[w2].id] = { month: '', note: '' };
+                            }
                         } else {
-                            const items = getWorkItemsForDept(d);
-                            items.forEach(w => {
-                                if (!workProgressData[d][w.id]) {
-                                    workProgressData[d][w.id] = { month: '', note: '' };
-                                } else if (typeof workProgressData[d][w.id] === 'string') {
-                                    workProgressData[d][w.id] = { month: workProgressData[d][w.id], note: '' };
+                            var items3 = getWorkItemsForDept(dept3);
+                            for (var w3 = 0; w3 < items3.length; w3++) {
+                                var wid = items3[w3].id;
+                                if (!workProgressData[dept3][wid]) {
+                                    workProgressData[dept3][wid] = { month: '', note: '' };
+                                } else if (typeof workProgressData[dept3][wid] === 'string') {
+                                    workProgressData[dept3][wid] = { month: workProgressData[dept3][wid], note: '' };
                                 }
-                            });
+                            }
                         }
-                    });
-                    const total = Object.values(memoData).reduce((a, b) => a + b.length, 0);
-                    setStatus(`<i class="fas fa-check-circle"></i> 已載入 (備忘 ${total} 項)`, 'saved');
+                    }
+                    var total = 0;
+                    for (var key in memoData) {
+                        total += memoData[key].length;
+                    }
+                    setStatus('<i class="fas fa-check-circle"></i> 已載入 (備忘 ' + total + ' 項)', 'saved');
                 }
                 refreshAll();
             } catch (err) {
                 console.error(err);
-                setStatus(`<i class="fas fa-exclamation-circle"></i> ${err.message}`, 'error');
+                setStatus('<i class="fas fa-exclamation-circle"></i> ' + err.message, 'error');
             }
         }
 
         async function saveAllData(token) {
-            const fullData = { memoData, workProgressData, updatedAt: new Date().toISOString() };
+            var fullData = { memoData: memoData, workProgressData: workProgressData, updatedAt: new Date().toISOString() };
             try {
-                const result = await fetchDataFromGitHub(token);
-                const sha = result ? result.sha : null;
+                var result = await fetchDataFromGitHub(token);
+                var sha = result ? result.sha : null;
                 await saveDataToGitHub(token, fullData, sha);
-                setStatus(`<i class="fas fa-check-circle"></i> 已儲存 (${new Date().toLocaleTimeString()})`, 'saved');
+                setStatus('<i class="fas fa-check-circle"></i> 已儲存 (' + new Date().toLocaleTimeString() + ')', 'saved');
                 return true;
             } catch (err) {
                 console.error(err);
-                setStatus(`<i class="fas fa-exclamation-circle"></i> ${err.message}`, 'error');
+                setStatus('<i class="fas fa-exclamation-circle"></i> ' + err.message, 'error');
                 return false;
             }
         }
@@ -913,74 +924,83 @@
         // ================================================================
         function renderMemoDeptTabs() {
             memoDeptTabs.innerHTML = '';
-            DEPARTMENTS.forEach(dept => {
-                const count = (memoData[dept] || []).length;
-                const btn = document.createElement('button');
-                btn.className = `dept-tab ${dept === currentDept ? 'active' : ''}`;
-                btn.innerHTML = `${dept} <span class="count-badge">${count}</span>`;
+            for (var i = 0; i < DEPARTMENTS.length; i++) {
+                var dept = DEPARTMENTS[i];
+                var count = (memoData[dept] || []).length;
+                var btn = document.createElement('button');
+                btn.className = 'dept-tab' + (dept === currentDept ? ' active' : '');
+                btn.innerHTML = dept + ' <span class="count-badge">' + count + '</span>';
                 btn.dataset.dept = dept;
-                btn.addEventListener('click', () => {
-                    currentDept = dept;
+                btn.addEventListener('click', function() {
+                    currentDept = this.dataset.dept;
                     renderMemoDeptTabs();
                     renderMemoCards();
                     renderProgressDeptTabs();
                     renderProgressCards();
                 });
                 memoDeptTabs.appendChild(btn);
-            });
+            }
         }
 
         function renderMemoCards() {
-            const items = memoData[currentDept] || [];
-            const total = items.length;
-            deptSummary.innerHTML = `<i class="fas fa-list-ul"></i> 總計 ${total} 項`;
+            var items = memoData[currentDept] || [];
+            var total = items.length;
+            deptSummary.innerHTML = '<i class="fas fa-list-ul"></i> 總計 ' + total + ' 項';
             if (total === 0) {
                 memoCardGrid.innerHTML =
-                    `<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">暫無項目，點「新增項目」添加</div>`;
+                    '<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">暫無項目，點「新增項目」添加</div>';
                 return;
             }
-            let html = '';
-            items.forEach(item => {
-                const progClass = item.progress === '已完成' ? 'badge-red' : 'badge-green';
-                const statClass = item.status === '緊急' ? 'badge-urgent' : 'badge-normal';
-                html += `
-                    <div class="task-card" data-id="${item.id}">
-                        <div class="card-title">${escapeHtml(item.name)}</div>
-                        <div class="card-meta">
-                            <span class="badge-progress ${progClass}">${item.progress}</span>
-                            <span class="badge-progress ${statClass}">${item.status}</span>
-                            ${item.note ? `<span style="font-size:0.8rem; color:#4a6885;"><i class="far fa-sticky-note"></i> ${escapeHtml(item.note)}</span>` : ''}
-                        </div>
-                        <div class="card-actions">
-                            <button class="edit-btn" data-id="${item.id}"><i class="fas fa-edit"></i> 編輯</button>
-                            <button class="delete-btn" data-id="${item.id}" data-type="memo"><i class="fas fa-trash"></i> 刪除</button>
-                        </div>
-                    </div>
-                `;
-            });
+            var html = '';
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                var progClass = item.progress === '已完成' ? 'badge-red' : 'badge-green';
+                var statClass = item.status === '緊急' ? 'badge-urgent' : 'badge-normal';
+                html += '<div class="task-card" data-id="' + item.id + '">' +
+                    '<div class="card-title">' + escapeHtml(item.name) + '</div>' +
+                    '<div class="card-meta">' +
+                    '<span class="badge-progress ' + progClass + '">' + item.progress + '</span>' +
+                    '<span class="badge-progress ' + statClass + '">' + item.status + '</span>';
+                if (item.note) {
+                    html += '<span style="font-size:0.8rem; color:#4a6885;"><i class="far fa-sticky-note"></i> ' + escapeHtml(item.note) + '</span>';
+                }
+                html += '</div>' +
+                    '<div class="card-actions">' +
+                    '<button class="edit-btn" data-id="' + item.id + '"><i class="fas fa-edit"></i> 編輯</button>' +
+                    '<button class="delete-btn" data-id="' + item.id + '" data-type="memo"><i class="fas fa-trash"></i> 刪除</button>' +
+                    '</div></div>';
+            }
             memoCardGrid.innerHTML = html;
-            memoCardGrid.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    deleteTarget = { type: 'memo', id: btn.dataset.id };
+
+            var delBtns = memoCardGrid.querySelectorAll('.delete-btn');
+            for (var i2 = 0; i2 < delBtns.length; i2++) {
+                delBtns[i2].addEventListener('click', function() {
+                    deleteTarget = { type: 'memo', id: this.dataset.id };
                     deleteModal.classList.add('show');
                     deletePassword.value = '';
                 });
-            });
-            memoCardGrid.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = btn.dataset.id;
-                    const item = (memoData[currentDept] || []).find(i => i.id === id);
-                    if (item) {
-                        editTarget = { dept: currentDept, item };
-                        memoName.value = item.name || '';
-                        memoProgress.value = item.progress || '未完成';
-                        memoNote.value = item.note || '';
-                        memoStatus.value = item.status || '正常';
-                        $('memoModalTitle').innerHTML = '<i class="fas fa-edit"></i> 編輯備忘項目';
+            }
+
+            var editBtns = memoCardGrid.querySelectorAll('.edit-btn');
+            for (var i3 = 0; i3 < editBtns.length; i3++) {
+                editBtns[i3].addEventListener('click', function() {
+                    var id = this.dataset.id;
+                    var items2 = memoData[currentDept] || [];
+                    var found = null;
+                    for (var j = 0; j < items2.length; j++) {
+                        if (items2[j].id === id) { found = items2[j]; break; }
+                    }
+                    if (found) {
+                        editTarget = { dept: currentDept, item: found };
+                        memoName.value = found.name || '';
+                        memoProgress.value = found.progress || '未完成';
+                        memoNote.value = found.note || '';
+                        memoStatus.value = found.status || '正常';
+                        document.getElementById('memoModalTitle').innerHTML = '<i class="fas fa-edit"></i> 編輯備忘項目';
                         memoModal.classList.add('show');
                     }
                 });
-            });
+            }
         }
 
         // ================================================================
@@ -988,73 +1008,65 @@
         // ================================================================
         function renderProgressDeptTabs() {
             progressDeptTabs.innerHTML = '';
-            DEPARTMENTS.forEach(dept => {
-                const btn = document.createElement('button');
-                btn.className = `dept-tab ${dept === currentDept ? 'active' : ''}`;
+            for (var i = 0; i < DEPARTMENTS.length; i++) {
+                var dept = DEPARTMENTS[i];
+                var btn = document.createElement('button');
+                btn.className = 'dept-tab' + (dept === currentDept ? ' active' : '');
                 btn.textContent = dept;
                 btn.dataset.dept = dept;
-                btn.addEventListener('click', () => {
-                    currentDept = dept;
+                btn.addEventListener('click', function() {
+                    currentDept = this.dataset.dept;
                     renderProgressDeptTabs();
                     renderProgressCards();
                     renderMemoDeptTabs();
                     renderMemoCards();
                 });
                 progressDeptTabs.appendChild(btn);
-            });
+            }
         }
 
         function renderProgressCards() {
-            const items = getWorkItemsForDept(currentDept);
-            
-            // 如果該部門沒有工作項目，顯示提示訊息
+            var items = getWorkItemsForDept(currentDept);
+
             if (items.length === 0) {
-                progressGrid.innerHTML = `
-                    <div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">
-                        <i class="fas fa-info-circle" style="font-size:1.5rem; display:block; margin-bottom:10px;"></i>
-                        此部門暫無工作進度項目
-                    </div>
-                `;
+                progressGrid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">' +
+                    '<i class="fas fa-info-circle" style="font-size:1.5rem; display:block; margin-bottom:10px;"></i>' +
+                    '此部門暫無工作進度項目</div>';
                 return;
             }
 
-            const deptData = workProgressData[currentDept] || {};
-            let html = '';
-            items.forEach(work => {
-                const data = deptData[work.id] || { month: '', note: '' };
-                const monthVal = data.month || '';
-                const noteVal = data.note || '';
-                html += `
-                    <div class="work-card" data-work-id="${work.id}">
-                        <div class="work-title">
-                            <i class="fas fa-file-invoice"></i>
-                            ${escapeHtml(work.name)}
-                        </div>
-                        <div class="work-month-row">
-                            <label><i class="far fa-calendar-alt"></i> 處理進度月份</label>
-                            <input type="month" class="work-month-input" value="${monthVal}" />
-                            <button class="save-month-btn" data-work-id="${work.id}">儲存</button>
-                            <span class="month-status" id="status-${work.id}"></span>
-                        </div>
-                        <div class="work-note-row">
-                            <label><i class="fas fa-sticky-note"></i> 備註</label>
-                            <input type="text" class="work-note-input" placeholder="輸入備註..." value="${escapeHtml(noteVal)}" />
-                            <button class="save-note-btn" data-work-id="${work.id}">儲存</button>
-                            <span class="note-status" id="note-status-${work.id}"></span>
-                        </div>
-                    </div>
-                `;
-            });
+            var deptData = workProgressData[currentDept] || {};
+            var html = '';
+            for (var i = 0; i < items.length; i++) {
+                var work = items[i];
+                var data = deptData[work.id] || { month: '', note: '' };
+                var monthVal = data.month || '';
+                var noteVal = data.note || '';
+                html += '<div class="work-card" data-work-id="' + work.id + '">' +
+                    '<div class="work-title"><i class="fas fa-file-invoice"></i> ' + escapeHtml(work.name) + '</div>' +
+                    '<div class="work-month-row">' +
+                    '<label><i class="far fa-calendar-alt"></i> 處理進度月份</label>' +
+                    '<input type="month" class="work-month-input" value="' + monthVal + '" />' +
+                    '<button class="save-month-btn" data-work-id="' + work.id + '">儲存</button>' +
+                    '<span class="month-status" id="status-' + work.id + '"></span>' +
+                    '</div>' +
+                    '<div class="work-note-row">' +
+                    '<label><i class="fas fa-sticky-note"></i> 備註</label>' +
+                    '<input type="text" class="work-note-input" placeholder="輸入備註..." value="' + escapeHtml(noteVal) + '" />' +
+                    '<button class="save-note-btn" data-work-id="' + work.id + '">儲存</button>' +
+                    '<span class="note-status" id="note-status-' + work.id + '"></span>' +
+                    '</div></div>';
+            }
             progressGrid.innerHTML = html;
 
-            // 儲存月份
-            progressGrid.querySelectorAll('.save-month-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const workId = this.dataset.workId;
-                    const card = this.closest('.work-card');
-                    const input = card.querySelector('.work-month-input');
-                    const statusEl = document.getElementById(`status-${workId}`);
-                    const val = input.value.trim();
+            var monthBtns = progressGrid.querySelectorAll('.save-month-btn');
+            for (var j = 0; j < monthBtns.length; j++) {
+                monthBtns[j].addEventListener('click', async function() {
+                    var workId = this.dataset.workId;
+                    var card = this.closest('.work-card');
+                    var input = card.querySelector('.work-month-input');
+                    var statusEl = document.getElementById('status-' + workId);
+                    var val = input.value.trim();
                     if (!val) {
                         statusEl.textContent = '⚠️ 請選擇月份';
                         statusEl.style.color = '#b33';
@@ -1065,62 +1077,63 @@
                         workProgressData[currentDept][workId] = { month: '', note: '' };
                     }
                     workProgressData[currentDept][workId].month = val;
-                    const ok = await saveAllData(githubToken);
+                    var ok = await saveAllData(githubToken);
                     if (ok) {
                         statusEl.textContent = '✅ 已儲存';
                         statusEl.style.color = '#1e7b4b';
-                        setTimeout(() => { statusEl.textContent = ''; }, 2000);
+                        setTimeout(function() { statusEl.textContent = ''; }, 2000);
                     } else {
                         statusEl.textContent = '❌ 儲存失敗';
                         statusEl.style.color = '#b33';
                     }
                 });
-            });
+            }
 
-            // 儲存備註
-            progressGrid.querySelectorAll('.save-note-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const workId = this.dataset.workId;
-                    const card = this.closest('.work-card');
-                    const input = card.querySelector('.work-note-input');
-                    const statusEl = document.getElementById(`note-status-${workId}`);
-                    const val = input.value.trim();
+            var noteBtns = progressGrid.querySelectorAll('.save-note-btn');
+            for (var k = 0; k < noteBtns.length; k++) {
+                noteBtns[k].addEventListener('click', async function() {
+                    var workId = this.dataset.workId;
+                    var card = this.closest('.work-card');
+                    var input = card.querySelector('.work-note-input');
+                    var statusEl = document.getElementById('note-status-' + workId);
+                    var val = input.value.trim();
                     if (!workProgressData[currentDept]) workProgressData[currentDept] = {};
                     if (!workProgressData[currentDept][workId]) {
                         workProgressData[currentDept][workId] = { month: '', note: '' };
                     }
                     workProgressData[currentDept][workId].note = val;
-                    const ok = await saveAllData(githubToken);
+                    var ok = await saveAllData(githubToken);
                     if (ok) {
                         statusEl.textContent = '✅ 已儲存';
                         statusEl.style.color = '#1e7b4b';
-                        setTimeout(() => { statusEl.textContent = ''; }, 2000);
+                        setTimeout(function() { statusEl.textContent = ''; }, 2000);
                     } else {
                         statusEl.textContent = '❌ 儲存失敗';
                         statusEl.style.color = '#b33';
                     }
                 });
-            });
+            }
 
-            // Enter 觸發儲存
-            progressGrid.querySelectorAll('.work-month-input').forEach(input => {
-                input.addEventListener('keydown', (e) => {
+            var monthInputs = progressGrid.querySelectorAll('.work-month-input');
+            for (var m = 0; m < monthInputs.length; m++) {
+                monthInputs[m].addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
-                        const card = input.closest('.work-card');
-                        const btn = card.querySelector('.save-month-btn');
+                        var card = this.closest('.work-card');
+                        var btn = card.querySelector('.save-month-btn');
                         if (btn) btn.click();
                     }
                 });
-            });
-            progressGrid.querySelectorAll('.work-note-input').forEach(input => {
-                input.addEventListener('keydown', (e) => {
+            }
+            var noteInputs = progressGrid.querySelectorAll('.work-note-input');
+            for (var n = 0; n < noteInputs.length; n++) {
+                noteInputs[n].addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
-                        const card = input.closest('.work-card');
-                        const btn = card.querySelector('.save-note-btn');
+                        var card = this.closest('.work-card');
+                        var btn = card.querySelector('.save-note-btn');
                         if (btn) btn.click();
                     }
                 });
-            });
+            }
         }
 
         // ================================================================
@@ -1136,46 +1149,62 @@
         // ================================================================
         //  模式切換
         // ================================================================
-        document.querySelectorAll('.mode-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+        var modeTabs = document.querySelectorAll('.mode-tab');
+        for (var mt = 0; mt < modeTabs.length; mt++) {
+            modeTabs[mt].addEventListener('click', function() {
+                var allTabs = document.querySelectorAll('.mode-tab');
+                for (var t = 0; t < allTabs.length; t++) {
+                    allTabs[t].classList.remove('active');
+                }
                 this.classList.add('active');
                 currentMode = this.dataset.mode;
-                memoSection.classList.toggle('hidden', currentMode !== 'memo');
-                progressSection.classList.toggle('hidden', currentMode !== 'progress');
+                if (currentMode === 'memo') {
+                    memoSection.classList.remove('hidden');
+                    progressSection.classList.add('hidden');
+                } else {
+                    memoSection.classList.add('hidden');
+                    progressSection.classList.remove('hidden');
+                }
                 refreshAll();
             });
-        });
+        }
 
         // ================================================================
         //  備忘錄：新增 / 編輯
         // ================================================================
-        addMemoBtn.addEventListener('click', () => {
+        addMemoBtn.addEventListener('click', function() {
             editTarget = null;
             memoName.value = '';
             memoProgress.value = '未完成';
             memoNote.value = '';
             memoStatus.value = '正常';
-            $('memoModalTitle').innerHTML = '<i class="fas fa-pen"></i> 新增備忘項目';
+            document.getElementById('memoModalTitle').innerHTML = '<i class="fas fa-pen"></i> 新增備忘項目';
             memoModal.classList.add('show');
         });
-        $('memoModalCancel').addEventListener('click', () => memoModal.classList.remove('show'));
-        $('memoModalSave').addEventListener('click', async () => {
-            const name = memoName.value.trim();
+
+        document.getElementById('memoModalCancel').addEventListener('click', function() {
+            memoModal.classList.remove('show');
+        });
+
+        document.getElementById('memoModalSave').addEventListener('click', async function() {
+            var name = memoName.value.trim();
             if (!name) { alert('請輸入項目名稱'); return; }
-            const progress = memoProgress.value;
-            const note = memoNote.value.trim();
-            const status = memoStatus.value;
+            var progress = memoProgress.value;
+            var note = memoNote.value.trim();
+            var status = memoStatus.value;
             if (editTarget) {
-                const idx = memoData[editTarget.dept].findIndex(i => i.id === editTarget.item.id);
+                var idx = -1;
+                for (var i = 0; i < memoData[editTarget.dept].length; i++) {
+                    if (memoData[editTarget.dept][i].id === editTarget.item.id) { idx = i; break; }
+                }
                 if (idx !== -1) {
-                    memoData[editTarget.dept][idx] = { ...memoData[editTarget.dept][idx], name, progress, note: note || '',
-                        status };
+                    memoData[editTarget.dept][idx] = { id: editTarget.item.id, name: name, progress: progress, note: note || '',
+                        status: status };
                 }
                 editTarget = null;
             } else {
                 if (!memoData[currentDept]) memoData[currentDept] = [];
-                memoData[currentDept].push({ id: genId(), name, progress, note: note || '', status });
+                memoData[currentDept].push({ id: genId(), name: name, progress: progress, note: note || '', status: status });
             }
             memoModal.classList.remove('show');
             await saveAllData(githubToken);
@@ -1185,16 +1214,21 @@
         // ================================================================
         //  刪除
         // ================================================================
-        $('deleteModalCancel').addEventListener('click', () => {
+        document.getElementById('deleteModalCancel').addEventListener('click', function() {
             deleteModal.classList.remove('show');
             deleteTarget = null;
         });
-        $('deleteModalConfirm').addEventListener('click', async () => {
+
+        document.getElementById('deleteModalConfirm').addEventListener('click', async function() {
             if (deletePassword.value.trim() !== DELETE_PASSWORD) { alert('密碼錯誤'); return; }
             if (!deleteTarget) return;
             if (deleteTarget.type === 'memo') {
-                for (let dept in memoData) {
-                    memoData[dept] = memoData[dept].filter(item => item.id !== deleteTarget.id);
+                for (var dept in memoData) {
+                    var newArr = [];
+                    for (var i = 0; i < memoData[dept].length; i++) {
+                        if (memoData[dept][i].id !== deleteTarget.id) newArr.push(memoData[dept][i]);
+                    }
+                    memoData[dept] = newArr;
                 }
                 await saveAllData(githubToken);
                 refreshAll();
@@ -1206,8 +1240,8 @@
         // ================================================================
         //  載入按鈕
         // ================================================================
-        loadBtn.addEventListener('click', async () => {
-            const token = tokenInput.value.trim();
+        loadBtn.addEventListener('click', async function() {
+            var token = tokenInput.value.trim();
             if (!token) { setStatus('<i class="fas fa-exclamation-circle"></i> 請輸入 Token', 'error'); return; }
             if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
                 setStatus('<i class="fas fa-exclamation-circle"></i> Token 格式不對', 'error');
@@ -1219,7 +1253,7 @@
             await loadData(token);
         });
 
-        tokenInput.addEventListener('keydown', (e) => {
+        tokenInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') loadBtn.click();
         });
 
@@ -1227,7 +1261,7 @@
         //  自動載入
         // ================================================================
         async function autoLoad() {
-            const savedToken = getTokenFromStorage();
+            var savedToken = getTokenFromStorage();
             if (savedToken) {
                 tokenInput.value = savedToken;
                 githubToken = savedToken;
@@ -1245,7 +1279,7 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入');
-        console.log('📋 會計部：僅備忘錄，無工作進度');
+        console.log('📋 寶利：4項 (發票+收據+津貼應付表+戶口核對)');
     </script>
 </body>
 </html>
