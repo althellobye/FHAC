@@ -2,13 +2,6 @@
   "memoData": {
     "總會": [
       {
-        "id": "mruqoiw7be1g",
-        "name": "测试",
-        "progress": "已完成",
-        "note": "",
-        "status": "緊急"
-      },
-      {
         "id": "mruqrc8x0tyv",
         "name": "學生未有分數",
         "progress": "未完成",
@@ -49,21 +42,51 @@
     "欣悅": [],
     "樂膳": []
   },
-  "progressData": [
-    {
-      "id": "mrvjwmff11gn",
-      "dept": "總會",
-      "project": "h",
-      "month": "2026-07",
-      "note": ""
+  "workProgressData": {
+    "總會": {
+      "work1": "",
+      "work2": ""
     },
-    {
-      "id": "mrvk02uzu8gr",
-      "dept": "總會",
-      "project": "h",
-      "month": "2026-07",
-      "note": ""
+    "創藝": {
+      "work1": "",
+      "work2": ""
+    },
+    "寶利": {
+      "work1": "",
+      "work2": ""
+    },
+    "康盈": {
+      "work1": "",
+      "work2": ""
+    },
+    "怡樂": {
+      "work1": "",
+      "work2": ""
+    },
+    "朗程": {
+      "work1": "",
+      "work2": ""
+    },
+    "寶翠": {
+      "work1": "",
+      "work2": ""
+    },
+    "心悅": {
+      "work1": "",
+      "work2": ""
+    },
+    "喜悅": {
+      "work1": "",
+      "work2": ""
+    },
+    "欣悅": {
+      "work1": "",
+      "work2": ""
+    },
+    "樂膳": {
+      "work1": "",
+      "work2": ""
     }
-  ],
-  "updatedAt": "2026-07-22T03:59:40.668Z"
+  },
+  "updatedAt": "2026-07-22T04:31:30.810Z"
 }
