@@ -65,16 +65,14 @@
         .work-card .work-month-row label { font-size:0.85rem; font-weight:500; color:#1a3457; }
         .work-card .work-month-row input[type="month"] { border:none; background:white; padding:6px 12px; border-radius:30px; font-size:0.85rem; outline:1px solid #d4dce8; flex:1; min-width:140px; }
         .work-card .work-month-row input[type="month"]:focus { outline:2px solid #2d6ff7; }
-        .work-card .work-month-row .save-month-btn { background:#1e2f4a; color:white; border:none; padding:6px 18px; border-radius:40px; font-size:0.8rem; cursor:pointer; font-weight:500; white-space:nowrap; }
-        .work-card .work-month-row .save-month-btn:hover { background:#0f1e33; }
-        .work-card .work-month-row .month-status { font-size:0.75rem; color:#1e7b4b; margin-left:4px; }
-        .work-card .work-note-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:4px 16px 4px 18px; }
+        .work-card .work-note-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:4px 16px 4px 18px; margin-bottom:8px; }
         .work-card .work-note-row label { font-size:0.8rem; font-weight:500; color:#4a6885; }
         .work-card .work-note-row input { border:1px solid #d4dce8; background:white; padding:4px 12px; border-radius:30px; font-size:0.8rem; flex:1; min-width:120px; outline:none; }
         .work-card .work-note-row input:focus { outline:2px solid #2d6ff7; }
-        .work-card .work-note-row .save-note-btn { background:#6b8bb0; color:white; border:none; padding:4px 16px; border-radius:40px; font-size:0.7rem; cursor:pointer; font-weight:500; white-space:nowrap; }
-        .work-card .work-note-row .save-note-btn:hover { background:#1f4a7a; }
-        .work-card .work-note-row .note-status { font-size:0.7rem; color:#1e7b4b; }
+        .work-card .work-save-row { display:flex; justify-content:flex-end; padding:0 4px; }
+        .work-card .work-save-row .save-btn { background:#1e2f4a; color:white; border:none; padding:6px 24px; border-radius:40px; font-size:0.8rem; cursor:pointer; font-weight:500; }
+        .work-card .work-save-row .save-btn:hover { background:#0f1e33; }
+        .work-card .work-save-row .save-status { font-size:0.75rem; color:#1e7b4b; margin-left:12px; }
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.25); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:999; visibility:hidden; opacity:0; transition:0.15s; }
         .modal-overlay.show { visibility:visible; opacity:1; }
         .modal-box { background:white; max-width:440px; width:90%; padding:28px 30px; border-radius:40px; box-shadow:0 30px 60px rgba(0,0,0,0.2); }
@@ -172,15 +170,9 @@
         const DELETE_PASSWORD = 'yuki';
         const STORAGE_KEY = 'fhac_github_token';
 
-        // ================================================================
-        //  部門列表（已移除新濠）
-        // ================================================================
-        const DEPARTMENTS = ['會計部', '總會', '總會/創藝/新濠', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
+        const DEPARTMENTS = ['會計部', '總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
         const PROGRESS_DEPARTMENTS = ['總會', '總會/創藝/新濠', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
 
-        // ================================================================
-        //  各部門固定工作項目
-        // ================================================================
         const WORK_ITEMS_BY_DEPT = {
             '總會': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
@@ -312,8 +304,7 @@
         //  GitHub API
         // ================================================================
         async function fetchDataFromGitHub(token) {
-            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' +
-                BRANCH;
+            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' + BRANCH;
             var resp = await fetch(url, {
                 headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
             });
@@ -331,8 +322,7 @@
         }
 
         async function saveDataToGitHub(token, data, sha) {
-            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' +
-                BRANCH;
+            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' + BRANCH;
             var jsonStr = JSON.stringify(data, null, 2);
             var encoder = new TextEncoder();
             var bytes = encoder.encode(jsonStr);
@@ -378,8 +368,7 @@
                             });
                             if (!retryResp.ok) {
                                 var retryErr = await retryResp.json().catch(function() { return {}; });
-                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp
-                                .statusText));
+                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp.statusText));
                             }
                             var result = await retryResp.json();
                             return result.content.sha;
@@ -396,8 +385,7 @@
                             });
                             if (!retryResp.ok) {
                                 var retryErr = await retryResp.json().catch(function() { return {}; });
-                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp
-                                .statusText));
+                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp.statusText));
                             }
                             var result = await retryResp.json();
                             return result.content.sha;
@@ -551,8 +539,7 @@
                     '<span class="badge-progress ' + progClass + '">' + item.progress + '</span>' +
                     '<span class="badge-progress ' + statClass + '">' + item.status + '</span>';
                 if (item.note) {
-                    html += '<span style="font-size:0.8rem; color:#4a6885;"><i class="far fa-sticky-note"></i> ' + escapeHtml(item
-                        .note) + '</span>';
+                    html += '<span style="font-size:0.8rem; color:#4a6885;"><i class="far fa-sticky-note"></i> ' + escapeHtml(item.note) + '</span>';
                 }
                 html += '</div>' +
                     '<div class="card-actions">' +
@@ -612,6 +599,9 @@
             }
         }
 
+        // ================================================================
+        //  工作進度卡片（合併為單一「儲存」按鈕）
+        // ================================================================
         function renderProgressCards() {
             var items = getWorkItemsForDept(currentDept);
             if (items.length === 0) {
@@ -632,36 +622,44 @@
                     '<div class="work-month-row">' +
                     '<label><i class="far fa-calendar-alt"></i> 處理進度月份</label>' +
                     '<input type="month" class="work-month-input" value="' + monthVal + '" />' +
-                    '<button class="save-month-btn" data-work-id="' + work.id + '">儲存</button>' +
-                    '<span class="month-status" id="status-' + work.id + '"></span>' +
                     '</div>' +
                     '<div class="work-note-row">' +
                     '<label><i class="fas fa-sticky-note"></i> 備註</label>' +
                     '<input type="text" class="work-note-input" placeholder="輸入備註..." value="' + escapeHtml(noteVal) + '" />' +
-                    '<button class="save-note-btn" data-work-id="' + work.id + '">儲存</button>' +
-                    '<span class="note-status" id="note-status-' + work.id + '"></span>' +
+                    '</div>' +
+                    '<div class="work-save-row">' +
+                    '<button class="save-btn" data-work-id="' + work.id + '"><i class="fas fa-save"></i> 儲存</button>' +
+                    '<span class="save-status" id="save-status-' + work.id + '"></span>' +
                     '</div></div>';
             }
             progressGrid.innerHTML = html;
 
-            var monthBtns = progressGrid.querySelectorAll('.save-month-btn');
-            for (var j = 0; j < monthBtns.length; j++) {
-                monthBtns[j].addEventListener('click', async function() {
+            // 單一儲存按鈕：同時儲存月份 + 備註
+            var saveBtns = progressGrid.querySelectorAll('.save-btn');
+            for (var j = 0; j < saveBtns.length; j++) {
+                saveBtns[j].addEventListener('click', async function() {
                     var workId = this.dataset.workId;
                     var card = this.closest('.work-card');
-                    var input = card.querySelector('.work-month-input');
-                    var statusEl = document.getElementById('status-' + workId);
-                    var val = input.value.trim();
-                    if (!val) {
+                    var monthInput = card.querySelector('.work-month-input');
+                    var noteInput = card.querySelector('.work-note-input');
+                    var statusEl = document.getElementById('save-status-' + workId);
+
+                    var monthVal = monthInput.value.trim();
+                    var noteVal = noteInput.value.trim();
+
+                    if (!monthVal) {
                         statusEl.textContent = '⚠️ 請選擇月份';
                         statusEl.style.color = '#b33';
                         return;
                     }
+
                     if (!workProgressData[currentDept]) workProgressData[currentDept] = {};
                     if (!workProgressData[currentDept][workId]) {
                         workProgressData[currentDept][workId] = { month: '', note: '' };
                     }
-                    workProgressData[currentDept][workId].month = val;
+                    workProgressData[currentDept][workId].month = monthVal;
+                    workProgressData[currentDept][workId].note = noteVal;
+
                     var ok = await saveAllData(githubToken);
                     if (ok) {
                         statusEl.textContent = '✅ 已儲存';
@@ -674,47 +672,13 @@
                 });
             }
 
-            var noteBtns = progressGrid.querySelectorAll('.save-note-btn');
-            for (var k = 0; k < noteBtns.length; k++) {
-                noteBtns[k].addEventListener('click', async function() {
-                    var workId = this.dataset.workId;
-                    var card = this.closest('.work-card');
-                    var input = card.querySelector('.work-note-input');
-                    var statusEl = document.getElementById('note-status-' + workId);
-                    var val = input.value.trim();
-                    if (!workProgressData[currentDept]) workProgressData[currentDept] = {};
-                    if (!workProgressData[currentDept][workId]) {
-                        workProgressData[currentDept][workId] = { month: '', note: '' };
-                    }
-                    workProgressData[currentDept][workId].note = val;
-                    var ok = await saveAllData(githubToken);
-                    if (ok) {
-                        statusEl.textContent = '✅ 已儲存';
-                        statusEl.style.color = '#1e7b4b';
-                        setTimeout(function() { statusEl.textContent = ''; }, 2000);
-                    } else {
-                        statusEl.textContent = '❌ 儲存失敗';
-                        statusEl.style.color = '#b33';
-                    }
-                });
-            }
-
-            var monthInputs = progressGrid.querySelectorAll('.work-month-input');
-            for (var m = 0; m < monthInputs.length; m++) {
-                monthInputs[m].addEventListener('keydown', function(e) {
+            // Enter 觸發儲存
+            var inputs = progressGrid.querySelectorAll('.work-month-input, .work-note-input');
+            for (var k = 0; k < inputs.length; k++) {
+                inputs[k].addEventListener('keydown', function(e) {
                     if (e.key === 'Enter') {
                         var card = this.closest('.work-card');
-                        var btn = card.querySelector('.save-month-btn');
-                        if (btn) btn.click();
-                    }
-                });
-            }
-            var noteInputs = progressGrid.querySelectorAll('.work-note-input');
-            for (var n = 0; n < noteInputs.length; n++) {
-                noteInputs[n].addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        var card = this.closest('.work-card');
-                        var btn = card.querySelector('.save-note-btn');
+                        var btn = card.querySelector('.save-btn');
                         if (btn) btn.click();
                     }
                 });
@@ -780,8 +744,7 @@
                     if (memoData[editTarget.dept][i].id === editTarget.item.id) { idx = i; break; }
                 }
                 if (idx !== -1) {
-                    memoData[editTarget.dept][idx] = { id: editTarget.item.id, name: name, progress: progress, note: note ||
-                            '', status: status };
+                    memoData[editTarget.dept][idx] = { id: editTarget.item.id, name: name, progress: progress, note: note || '', status: status };
                 }
                 editTarget = null;
             } else {
@@ -908,8 +871,7 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入');
-        console.log('📋 已刪除新濠部門，創藝改名為「總會/創藝/新濠」');
-        console.log('📋 欣悅已新增：銷售分攤表、銷售現金交回情況');
+        console.log('📋 工作進度每個項目只有一個「儲存」按鈕');
     </script>
 </body>
 </html>
