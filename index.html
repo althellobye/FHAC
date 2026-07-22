@@ -6,7 +6,7 @@
     <title>FHAC · 團隊協作看板</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ===== 樣式與之前相同，省略節省空間 ===== */
+        /* ===== 樣式與之前完全相同 ===== */
         * { margin:0; padding:0; box-sizing:border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
         body { background:#f0f4fc; min-height:100vh; padding:20px; display:flex; justify-content:center; }
         .app-container { max-width:1300px; width:100%; background:white; border-radius:32px; padding:24px 28px 40px; box-shadow:0 20px 40px rgba(0,0,0,0.06); }
@@ -175,21 +175,24 @@
         const DEPARTMENTS = ['會計部', '總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
         const PROGRESS_DEPARTMENTS = ['總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
 
+        // ================================================================
+        //  各部門固定工作項目（創藝已修改：新濠→創藝，欣悅→新濠）
+        // ================================================================
         const WORK_ITEMS_BY_DEPT = {
             '總會': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
-                { id: 'work3', name: '銷售發票分攤表（已整理到（）月）' },
-                { id: 'work4', name: '義賣活動分攤表（已整理到（）月）' },
-                { id: 'work5', name: '寄賣店分攤表（已整理到（）月）' }
+                { id: 'work3', name: '銷售發票分攤表' },
+                { id: 'work4', name: '義賣活動分攤表' },
+                { id: 'work5', name: '寄賣店分攤表' }
             ],
             '創藝': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
-                { id: 'work3', name: '銷售分攤表（新濠）' },
-                { id: 'work4', name: '銷售現金交回情況（新濠）' },
-                { id: 'work5', name: '銷售分攤表（欣悅）' },
-                { id: 'work6', name: '銷售現金交回情況（欣悅）' }
+                { id: 'work3', name: '銷售分攤表（創藝）' },
+                { id: 'work4', name: '銷售現金交回情況（創藝）' },
+                { id: 'work5', name: '銷售分攤表（新濠）' },
+                { id: 'work6', name: '銷售現金交回情況（新濠）' }
             ],
             '寶利': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
@@ -403,7 +406,7 @@
         }
 
         // ================================================================
-        //  核心資料載入 / 儲存（增加強制刷新）
+        //  核心資料載入 / 儲存
         // ================================================================
         async function loadData(token, showStatus) {
             if (showStatus !== false) {
@@ -491,9 +494,6 @@
             }
         }
 
-        // ================================================================
-        //  強制刷新資料（用於刪除後）
-        // ================================================================
         async function forceReload() {
             if (githubToken) {
                 await loadData(githubToken, false);
@@ -502,7 +502,7 @@
         }
 
         // ================================================================
-        //  渲染函數（與之前相同）
+        //  渲染函數
         // ================================================================
         function renderMemoDeptTabs() {
             memoDeptTabs.innerHTML = '';
@@ -637,7 +637,6 @@
             }
             progressGrid.innerHTML = html;
 
-            // 儲存月份
             var monthBtns = progressGrid.querySelectorAll('.save-month-btn');
             for (var j = 0; j < monthBtns.length; j++) {
                 monthBtns[j].addEventListener('click', async function() {
@@ -668,7 +667,6 @@
                 });
             }
 
-            // 儲存備註
             var noteBtns = progressGrid.querySelectorAll('.save-note-btn');
             for (var k = 0; k < noteBtns.length; k++) {
                 noteBtns[k].addEventListener('click', async function() {
@@ -694,7 +692,6 @@
                 });
             }
 
-            // Enter 觸發
             var monthInputs = progressGrid.querySelectorAll('.work-month-input');
             for (var m = 0; m < monthInputs.length; m++) {
                 monthInputs[m].addEventListener('keydown', function(e) {
@@ -790,7 +787,7 @@
         });
 
         // ================================================================
-        //  刪除（已修復：刪除前強制刷新，刪除後重新載入）
+        //  刪除
         // ================================================================
         document.getElementById('deleteModalCancel').addEventListener('click', function() {
             deleteModal.classList.remove('show');
@@ -811,10 +808,8 @@
             }
 
             try {
-                // 1. 先強制重新載入最新資料（避免衝突）
                 await forceReload();
 
-                // 2. 再次確認項目是否存在
                 var found = false;
                 if (deleteTarget.type === 'memo') {
                     for (var dept in memoData) {
@@ -833,7 +828,6 @@
                     return;
                 }
 
-                // 3. 執行刪除
                 if (deleteTarget.type === 'memo') {
                     for (var dept2 in memoData) {
                         var newArr = [];
@@ -844,7 +838,6 @@
                     }
                 }
 
-                // 4. 儲存到 GitHub
                 var ok = await saveAllData(githubToken);
 
                 if (ok) {
@@ -853,11 +846,8 @@
                     alert('❌ 刪除失敗，請重試');
                 }
 
-                // 5. 關閉彈窗
                 deleteModal.classList.remove('show');
                 deleteTarget = null;
-
-                // 6. 重新載入資料
                 await forceReload();
 
             } catch (err) {
@@ -911,7 +901,7 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入');
-        console.log('🔧 刪除功能已修復：刪除前會強制同步最新資料');
+        console.log('📋 創藝項目已修改：新濠→創藝，欣悅→新濠');
     </script>
 </body>
 </html>
