@@ -187,53 +187,161 @@
       }
     ],
     "欣悅": [],
-    "樂膳": []
+    "樂膳": [],
+    "會計部": [
+      {
+        "id": "mrvnvf416v40",
+        "name": "大陸喜悅--資本問題(1萬)",
+        "progress": "未完成",
+        "note": "",
+        "status": "正常"
+      }
+    ],
+    "青濤": []
   },
   "workProgressData": {
     "總會": {
-      "work1": "2026-05",
-      "work2": "2026-03"
+      "work1": {
+        "month": "2026-05",
+        "note": ""
+      },
+      "work2": {
+        "month": "2026-03",
+        "note": ""
+      },
+      "work3": {
+        "month": "",
+        "note": ""
+      }
     },
     "創藝": {
-      "work1": "",
-      "work2": ""
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "",
+        "note": ""
+      },
+      "work3": {
+        "month": "",
+        "note": ""
+      },
+      "work4": {
+        "month": "",
+        "note": ""
+      }
     },
     "寶利": {
-      "work1": "2026-05",
-      "work2": "2026-05"
+      "work1": {
+        "month": "2026-05",
+        "note": ""
+      },
+      "work2": {
+        "month": "2026-05",
+        "note": ""
+      }
     },
     "康盈": {
-      "work1": "2026-05",
-      "work2": ""
+      "work1": {
+        "month": "2026-05",
+        "note": ""
+      },
+      "work2": {
+        "month": "",
+        "note": ""
+      }
     },
     "怡樂": {
-      "work1": "",
-      "work2": "2026-04"
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "2026-04",
+        "note": ""
+      }
     },
     "朗程": {
-      "work1": "",
-      "work2": "2026-05"
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "2026-05",
+        "note": ""
+      }
     },
     "寶翠": {
-      "work1": "2026-05",
-      "work2": "2026-05"
+      "work1": {
+        "month": "2026-05",
+        "note": ""
+      },
+      "work2": {
+        "month": "2026-05",
+        "note": ""
+      }
     },
     "心悅": {
-      "work1": "",
-      "work2": "2026-04"
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "2026-04",
+        "note": ""
+      }
     },
     "喜悅": {
-      "work1": "",
-      "work2": ""
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "",
+        "note": ""
+      }
     },
     "欣悅": {
-      "work1": "",
-      "work2": ""
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "",
+        "note": ""
+      }
     },
     "樂膳": {
-      "work1": "",
-      "work2": ""
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "",
+        "note": ""
+      }
+    },
+    "會計部": {
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "",
+        "note": ""
+      }
+    },
+    "青濤": {
+      "work1": {
+        "month": "",
+        "note": ""
+      },
+      "work2": {
+        "month": "",
+        "note": ""
+      }
     }
   },
-  "updatedAt": "2026-07-22T05:39:52.322Z"
+  "updatedAt": "2026-07-22T05:48:01.729Z"
 }
