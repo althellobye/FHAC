@@ -107,6 +107,10 @@
             background: #fff3cd;
             color: #856404;
         }
+        .token-status.saved {
+            background: #d5f0e0;
+            color: #0b5532;
+        }
 
         /* ===== 模式切換 ===== */
         .mode-tabs {
@@ -558,6 +562,7 @@
         const BRANCH = 'main';
         const DEPARTMENTS = ['總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '心悅', '喜悅', '欣悅', '樂膳'];
         const DELETE_PASSWORD = 'yuki';
+        const STORAGE_KEY = 'fhac_github_token';
 
         // 固定工作項目
         const WORK_ITEMS = [
@@ -575,7 +580,6 @@
         let githubToken = '';
 
         let memoData = {};
-        // 工作進度資料結構: { "總會": { "work1": "2026-07", "work2": "2026-06" }, ... }
         let workProgressData = {};
 
         const $ = (id) => document.getElementById(id);
@@ -600,6 +604,32 @@
         const memoNote = $('memoNote');
         const memoStatus = $('memoStatus');
         const deletePassword = $('deletePassword');
+
+        // ================================================================
+        //  Token 儲存 / 讀取
+        // ================================================================
+        function saveTokenToStorage(token) {
+            try {
+                localStorage.setItem(STORAGE_KEY, token);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function getTokenFromStorage() {
+            try {
+                return localStorage.getItem(STORAGE_KEY) || '';
+            } catch (e) {
+                return '';
+            }
+        }
+
+        function clearTokenFromStorage() {
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+            } catch (e) {}
+        }
 
         // ================================================================
         //  工具函數
@@ -710,7 +740,7 @@
                         }
                     });
                     const total = Object.values(memoData).reduce((a, b) => a + b.length, 0);
-                    setStatus(`<i class="fas fa-check-circle"></i> 已載入 (備忘 ${total} 項)`, '');
+                    setStatus(`<i class="fas fa-check-circle"></i> 已載入 (備忘 ${total} 項)`, 'saved');
                 }
                 refreshAll();
             } catch (err) {
@@ -725,7 +755,7 @@
                 const result = await fetchDataFromGitHub(token);
                 const sha = result ? result.sha : null;
                 await saveDataToGitHub(token, fullData, sha);
-                setStatus(`<i class="fas fa-check-circle"></i> 已儲存 (${new Date().toLocaleTimeString()})`, '');
+                setStatus(`<i class="fas fa-check-circle"></i> 已儲存 (${new Date().toLocaleTimeString()})`, 'saved');
                 return true;
             } catch (err) {
                 console.error(err);
@@ -749,7 +779,6 @@
                     currentDept = dept;
                     renderMemoDeptTabs();
                     renderMemoCards();
-                    // 同步工作進度的部門高亮
                     renderProgressDeptTabs();
                     renderProgressCards();
                 });
@@ -811,7 +840,7 @@
         }
 
         // ================================================================
-        //  渲染：工作進度（固定兩項）
+        //  渲染：工作進度
         // ================================================================
         function renderProgressDeptTabs() {
             progressDeptTabs.innerHTML = '';
@@ -824,7 +853,6 @@
                     currentDept = dept;
                     renderProgressDeptTabs();
                     renderProgressCards();
-                    // 同步備忘錄的部門高亮
                     renderMemoDeptTabs();
                     renderMemoCards();
                 });
@@ -854,7 +882,6 @@
             });
             progressGrid.innerHTML = html;
 
-            // 綁定儲存按鈕
             progressGrid.querySelectorAll('.save-month-btn').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     const workId = this.dataset.workId;
@@ -867,7 +894,6 @@
                         statusEl.style.color = '#b33';
                         return;
                     }
-                    // 更新資料
                     if (!workProgressData[currentDept]) {
                         workProgressData[currentDept] = {};
                     }
@@ -884,7 +910,6 @@
                 });
             });
 
-            // 按 Enter 觸發儲存
             progressGrid.querySelectorAll('.work-month-input').forEach(input => {
                 input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
@@ -957,7 +982,7 @@
         });
 
         // ================================================================
-        //  刪除（密碼 yuki）
+        //  刪除
         // ================================================================
         $('deleteModalCancel').addEventListener('click', () => {
             deleteModal.classList.remove('show');
@@ -978,7 +1003,7 @@
         });
 
         // ================================================================
-        //  載入按鈕
+        //  載入按鈕（會自動儲存 Token）
         // ================================================================
         loadBtn.addEventListener('click', async () => {
             const token = tokenInput.value.trim();
@@ -988,6 +1013,9 @@
                 return;
             }
             githubToken = token;
+            // 儲存到瀏覽器
+            saveTokenToStorage(token);
+            setStatus('<i class="fas fa-save"></i> Token 已儲存', 'saved');
             await loadData(token);
         });
 
@@ -996,14 +1024,30 @@
         });
 
         // ================================================================
+        //  自動載入（如果之前有儲存 Token）
+        // ================================================================
+        async function autoLoad() {
+            const savedToken = getTokenFromStorage();
+            if (savedToken) {
+                tokenInput.value = savedToken;
+                githubToken = savedToken;
+                setStatus('<i class="fas fa-sync-alt fa-pulse"></i> 自動載入中...', 'loading');
+                await loadData(savedToken);
+            } else {
+                setStatus('<i class="fas fa-info-circle"></i> 請輸入 Token 後載入', '');
+            }
+        }
+
+        // ================================================================
         //  初始化
         // ================================================================
         refreshAll();
-        setStatus('<i class="fas fa-info-circle"></i> 請輸入 Token 後載入', '');
+        // 自動載入之前儲存的 Token
+        autoLoad();
+
         console.log('✅ FHAC 看板已載入');
         console.log(`📁 資料將儲存在: ${GITHUB_USER}/${GITHUB_REPO}/${DATA_FILE}`);
-        console.log('🔑 請輸入您的 GitHub Token 後點擊「載入資料」');
-        console.log('📋 工作進度：每個部門固定兩項，可修改月份');
+        console.log('🔑 Token 會自動儲存在瀏覽器，下次不用重新輸入');
     </script>
 </body>
 </html>
