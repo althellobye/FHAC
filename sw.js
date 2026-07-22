@@ -6,12 +6,11 @@ const URLS_TO_CACHE = [
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css'
 ];
 
-// 安裝時快取資源
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(function(cache) {
-        console.log('✅ Service Worker 安裝中，快取資源...');
+        console.log('✅ Service Worker 安裝中...');
         return cache.addAll(URLS_TO_CACHE);
       })
       .then(function() {
@@ -20,7 +19,6 @@ self.addEventListener('install', function(event) {
   );
 });
 
-// 啟動時清理舊快取
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
@@ -36,7 +34,6 @@ self.addEventListener('activate', function(event) {
   );
 });
 
-// 攔截請求，從快取回應
 self.addEventListener('fetch', function(event) {
   event.respondWith(
     caches.match(event.request)
@@ -57,4 +54,4 @@ self.addEventListener('fetch', function(event) {
         });
       })
   );
-});v
+});
