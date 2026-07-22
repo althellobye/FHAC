@@ -609,15 +609,19 @@
         const STORAGE_KEY = 'fhac_github_token';
 
         // ================================================================
-        //  部門列表
+        //  部門列表（會計部僅備忘錄，工作進度不顯示）
         // ================================================================
         const DEPARTMENTS = ['會計部', '總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
+
+        // ================================================================
+        //  工作進度部門列表（不含會計部）
+        // ================================================================
+        const PROGRESS_DEPARTMENTS = ['總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
 
         // ================================================================
         //  各部門固定工作項目
         // ================================================================
         const WORK_ITEMS_BY_DEPT = {
-            '會計部': [],
             '總會': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
@@ -643,18 +647,24 @@
                 { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
             ],
             '怡樂': [
-                { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
+                { id: 'work1', name: '收據核對及檢視是否已存入銀行' },
+                { id: 'work2', name: '服務使用者津貼應付表核對' },
+                { id: 'work3', name: '服務使用者戶口核對' }
             ],
             '朗程': [
                 { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
             ],
             '寶翠': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
-                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
+                { id: 'work3', name: '服務使用者津貼應付表核對' },
+                { id: 'work4', name: '服務使用者戶口核對' }
             ],
             '青濤': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
-                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
+                { id: 'work3', name: '服務使用者津貼應付表核對' },
+                { id: 'work4', name: '服務使用者戶口核對' }
             ],
             '心悅': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
@@ -853,8 +863,8 @@
                         memoData[DEPARTMENTS[d]] = [];
                     }
                     workProgressData = {};
-                    for (var d2 = 0; d2 < DEPARTMENTS.length; d2++) {
-                        var dept = DEPARTMENTS[d2];
+                    for (var d2 = 0; d2 < PROGRESS_DEPARTMENTS.length; d2++) {
+                        var dept = PROGRESS_DEPARTMENTS[d2];
                         workProgressData[dept] = {};
                         var items = getWorkItemsForDept(dept);
                         for (var w = 0; w < items.length; w++) {
@@ -871,8 +881,8 @@
                         if (!memoData[dept2]) memoData[dept2] = [];
                     }
                     workProgressData = parsed.workProgressData || {};
-                    for (var d4 = 0; d4 < DEPARTMENTS.length; d4++) {
-                        var dept3 = DEPARTMENTS[d4];
+                    for (var d4 = 0; d4 < PROGRESS_DEPARTMENTS.length; d4++) {
+                        var dept3 = PROGRESS_DEPARTMENTS[d4];
                         if (!workProgressData[dept3]) {
                             workProgressData[dept3] = {};
                             var items2 = getWorkItemsForDept(dept3);
@@ -962,7 +972,8 @@
                     '<span class="badge-progress ' + progClass + '">' + item.progress + '</span>' +
                     '<span class="badge-progress ' + statClass + '">' + item.status + '</span>';
                 if (item.note) {
-                    html += '<span style="font-size:0.8rem; color:#4a6885;"><i class="far fa-sticky-note"></i> ' + escapeHtml(item.note) + '</span>';
+                    html += '<span style="font-size:0.8rem; color:#4a6885;"><i class="far fa-sticky-note"></i> ' + escapeHtml(item
+                        .note) + '</span>';
                 }
                 html += '</div>' +
                     '<div class="card-actions">' +
@@ -1004,12 +1015,12 @@
         }
 
         // ================================================================
-        //  渲染：工作進度
+        //  渲染：工作進度（僅顯示 PROGRESS_DEPARTMENTS）
         // ================================================================
         function renderProgressDeptTabs() {
             progressDeptTabs.innerHTML = '';
-            for (var i = 0; i < DEPARTMENTS.length; i++) {
-                var dept = DEPARTMENTS[i];
+            for (var i = 0; i < PROGRESS_DEPARTMENTS.length; i++) {
+                var dept = PROGRESS_DEPARTMENTS[i];
                 var btn = document.createElement('button');
                 btn.className = 'dept-tab' + (dept === currentDept ? ' active' : '');
                 btn.textContent = dept;
@@ -1279,7 +1290,10 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入');
-        console.log('📋 寶利：4項 (發票+收據+津貼應付表+戶口核對)');
+        console.log('📋 會計部：僅備忘錄，工作進度不顯示');
+        console.log('📋 怡樂：3項 (收據+津貼+戶口)');
+        console.log('📋 寶翠：4項 (發票+收據+津貼+戶口)');
+        console.log('📋 青濤：4項 (發票+收據+津貼+戶口)');
     </script>
 </body>
 </html>
