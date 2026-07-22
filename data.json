@@ -115,13 +115,6 @@
         "progress": "未完成",
         "note": "跟進中",
         "status": "正常"
-      },
-      {
-        "id": "mruqsje2c6pe",
-        "name": "唔",
-        "progress": "已完成",
-        "note": "",
-        "status": "正常"
       }
     ],
     "寶翠": [
@@ -383,6 +376,10 @@
       "work2": {
         "month": "2026-04",
         "note": ""
+      },
+      "work3": {
+        "month": "",
+        "note": ""
       }
     },
     "朗程": {
@@ -402,6 +399,14 @@
       },
       "work2": {
         "month": "2026-05",
+        "note": ""
+      },
+      "work3": {
+        "month": "",
+        "note": ""
+      },
+      "work4": {
+        "month": "",
         "note": ""
       }
     },
@@ -463,8 +468,16 @@
       "work2": {
         "month": "",
         "note": ""
+      },
+      "work3": {
+        "month": "",
+        "note": ""
+      },
+      "work4": {
+        "month": "",
+        "note": ""
       }
     }
   },
-  "updatedAt": "2026-07-22T06:20:43.000Z"
+  "updatedAt": "2026-07-22T06:33:59.778Z"
 }
