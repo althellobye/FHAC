@@ -132,8 +132,6 @@
         .mode-tab i {
             margin-right: 8px;
         }
-
-        /* ===== 部門按鈕 - 手機三行 ===== */
         .dept-tabs {
             display: flex;
             flex-wrap: wrap;
@@ -176,8 +174,6 @@
         .dept-tab.active:hover {
             background: #142433;
         }
-
-        /* ===== 手機優化：三行顯示 ===== */
         @media (max-width: 600px) {
             .dept-tabs {
                 gap: 4px 6px;
@@ -191,7 +187,6 @@
                 padding: 0 6px;
             }
         }
-
         .summary-stats {
             background: #f8faff;
             padding: 12px 20px;
@@ -312,8 +307,6 @@
         .hidden {
             display: none !important;
         }
-
-        /* ===== 工作進度 ===== */
         .work-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -390,8 +383,6 @@
             color: #1e7b4b;
             margin-left: 4px;
         }
-
-        /* ===== 備註欄位 ===== */
         .work-card .work-note-row {
             display: flex;
             align-items: center;
@@ -435,7 +426,6 @@
             font-size: 0.7rem;
             color: #1e7b4b;
         }
-
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -619,44 +609,42 @@
         const STORAGE_KEY = 'fhac_github_token';
 
         // ================================================================
-        //  部門列表（會計部在最前面，青濤在心悅前面）
+        //  部門列表
         // ================================================================
         const DEPARTMENTS = ['會計部', '總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
 
         // ================================================================
-        //  各部門固定工作項目
+        //  各部門固定工作項目（會計部無工作項目）
         // ================================================================
         const WORK_ITEMS_BY_DEPT = {
-            '會計部': [
-                { id: 'work1', name: '發票核實及檢視收款情況' },
-                { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
-            ],
+            '會計部': [],  // ← 空陣列，不顯示任何工作項目
             '總會': [
-                { id: 'work1', name: '銷售發票分攤表（已整理到（）月）' },
-                { id: 'work2', name: '義賣活動分攤表（已整理到（）月）' },
-                { id: 'work3', name: '寄賣店分攤表（已整理到（）月）' }
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
+                { id: 'work3', name: '銷售發票分攤表（已整理到（）月）' },
+                { id: 'work4', name: '義賣活動分攤表（已整理到（）月）' },
+                { id: 'work5', name: '寄賣店分攤表（已整理到（）月）' }
             ],
             '創藝': [
-                { id: 'work1', name: '銷售分攤表（新濠）' },
-                { id: 'work2', name: '銷售現金交回情況（新濠）' },
-                { id: 'work3', name: '銷售分攤表（欣悅）' },
-                { id: 'work4', name: '銷售現金交回情況（欣悅）' }
+                { id: 'work1', name: '發票核實及檢視收款情況' },
+                { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
+                { id: 'work3', name: '銷售分攤表（新濠）' },
+                { id: 'work4', name: '銷售現金交回情況（新濠）' },
+                { id: 'work5', name: '銷售分攤表（欣悅）' },
+                { id: 'work6', name: '銷售現金交回情況（欣悅）' }
             ],
             '寶利': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
             ],
             '康盈': [
-                { id: 'work1', name: '自定義項目 1' },
-                { id: 'work2', name: '自定義項目 2' }
+                { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
             ],
             '怡樂': [
-                { id: 'work1', name: '自定義項目 1' },
-                { id: 'work2', name: '自定義項目 2' }
+                { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
             ],
             '朗程': [
-                { id: 'work1', name: '自定義項目 1' },
-                { id: 'work2', name: '自定義項目 2' }
+                { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
             ],
             '寶翠': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
@@ -671,8 +659,7 @@
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
             ],
             '喜悅': [
-                { id: 'work1', name: '自定義項目 1' },
-                { id: 'work2', name: '自定義項目 2' }
+                { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
             ],
             '欣悅': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
@@ -685,7 +672,7 @@
         };
 
         function getWorkItemsForDept(dept) {
-            return WORK_ITEMS_BY_DEPT[dept] || WORK_ITEMS_BY_DEPT['寶利'];
+            return WORK_ITEMS_BY_DEPT[dept] || [];
         }
 
         // ================================================================
@@ -752,7 +739,7 @@
         }
 
         // ================================================================
-        //  GitHub API（含 409 自動重試）
+        //  GitHub API
         // ================================================================
         async function fetchDataFromGitHub(token) {
             const url = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}?ref=${BRANCH}`;
@@ -762,7 +749,7 @@
             if (!resp.ok) {
                 if (resp.status === 404) return null;
                 const err = await resp.json().catch(() => ({}));
-                throw new Error(`GitHub API 錯誤 (${resp.status}): ${err.message || resp.statusText}`);
+                throw new Error(`GitHub API 錯誤 (${resp.status)}: ${err.message || resp.statusText}`);
             }
             const data = await resp.json();
             const binary = atob(data.content);
@@ -891,7 +878,6 @@
                                 if (!workProgressData[d][w.id]) {
                                     workProgressData[d][w.id] = { month: '', note: '' };
                                 } else if (typeof workProgressData[d][w.id] === 'string') {
-                                    // 相容舊資料（只有月份）
                                     workProgressData[d][w.id] = { month: workProgressData[d][w.id], note: '' };
                                 }
                             });
@@ -998,7 +984,7 @@
         }
 
         // ================================================================
-        //  渲染：工作進度（含備註）
+        //  渲染：工作進度
         // ================================================================
         function renderProgressDeptTabs() {
             progressDeptTabs.innerHTML = '';
@@ -1019,8 +1005,20 @@
         }
 
         function renderProgressCards() {
-            const deptData = workProgressData[currentDept] || {};
             const items = getWorkItemsForDept(currentDept);
+            
+            // 如果該部門沒有工作項目，顯示提示訊息
+            if (items.length === 0) {
+                progressGrid.innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">
+                        <i class="fas fa-info-circle" style="font-size:1.5rem; display:block; margin-bottom:10px;"></i>
+                        此部門暫無工作進度項目
+                    </div>
+                `;
+                return;
+            }
+
+            const deptData = workProgressData[currentDept] || {};
             let html = '';
             items.forEach(work => {
                 const data = deptData[work.id] || { month: '', note: '' };
@@ -1247,9 +1245,7 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入');
-        console.log('📋 部門：會計部(新) + 青濤(新)');
-        console.log('📝 工作進度已加入備註欄位');
-        console.log('🔧 康盈/怡樂/朗程/喜悅 為自定義項目');
+        console.log('📋 會計部：僅備忘錄，無工作進度');
     </script>
 </body>
 </html>
