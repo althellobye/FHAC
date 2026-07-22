@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5" />
     <title>FHAC · 團隊協作看板</title>
     
-    <!-- ===== PWA 設定 ===== -->
+    <!-- ===== PWA 設定（綠色圖示） ===== -->
     <link rel="manifest" href="manifest.json" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="FHAC" />
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230b1a33'/%3E%3Ctext x='96' y='122' font-size='80' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3EFHAC%3C/text%3E%3C/svg%3E" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%232e7d32'/%3E%3Ctext x='96' y='118' font-size='60' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold'%3EFHAC%3C/text%3E%3C/svg%3E" />
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
@@ -226,11 +226,9 @@
             <div id="memoCardGrid"><div class="loading-spinner"><i class="fas fa-cloud-upload-alt"></i>請輸入 Token 後點擊「載入資料」</div></div>
         </div>
 
+        <!-- ===== 工作進度（已移除提示文字） ===== -->
         <div id="progressSection" class="hidden">
             <div class="dept-tabs" id="progressDeptTabs"></div>
-            <div style="margin:10px 0 16px; color:#4a6885; font-size:0.9rem;">
-                <i class="fas fa-info-circle"></i> 每個部門固定工作項目，可修改處理進度月份與備註
-            </div>
             <div class="work-grid" id="progressGrid"></div>
         </div>
     </div>
@@ -275,7 +273,7 @@
         // ================================================================
         //  🔥 版本號 - 每次更新時只改這裡！ 🔥
         // ================================================================
-        const APP_VERSION = '2026.07.22.009';
+        const APP_VERSION = '2026.07.22.010';
 
         const VERSION_STORAGE_KEY = 'fhac_app_version';
 
@@ -388,7 +386,6 @@
                     demo: '⋮ 選單 → ⭐ 加到主畫面 → ✅ 新增'
                 };
             } else {
-                // 電腦：不顯示任何步驟（回傳空）
                 return {
                     tag: '💻 電腦',
                     steps: [],
@@ -402,7 +399,6 @@
         function showGuide() {
             var device = detectDevice();
             
-            // 電腦不顯示引導
             if (device === 'desktop') {
                 return;
             }
@@ -443,7 +439,6 @@
         // ================================================================
         //  安裝引導事件（手機專用）
         // ================================================================
-        // 檢查是否為電腦，隱藏橫幅
         (function() {
             var device = detectDevice();
             if (device === 'desktop') {
@@ -454,7 +449,6 @@
         document.getElementById('installGuideBtn').addEventListener('click', function() {
             var device = detectDevice();
             if (device === 'desktop') {
-                // 電腦點擊不做事
                 return;
             }
             showGuide();
@@ -475,11 +469,10 @@
             }
         });
 
-        // 首次使用自動顯示（只顯示一次，且僅限手機）
         (function() {
             var device = detectDevice();
             if (device === 'desktop') {
-                return; // 電腦不顯示
+                return;
             }
             var hasSeen = localStorage.getItem('fhac_guide_seen');
             if (!hasSeen) {
@@ -1211,7 +1204,8 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入 (v' + APP_VERSION + ')');
-        console.log('📱 安裝引導僅限手機，電腦不顯示');
+        console.log('🟢 App Icon 底色為綠色，FHAC 字體已縮小');
+        console.log('🗑️ 工作進度提示文字已刪除');
     </script>
 </body>
 </html>
