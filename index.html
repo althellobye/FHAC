@@ -6,524 +6,88 @@
     <title>FHAC · 團隊協作看板</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        }
-        body {
-            background: #f0f4fc;
-            min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-        .app-container {
-            max-width: 1300px;
-            width: 100%;
-            background: white;
-            border-radius: 32px;
-            padding: 24px 28px 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
-        }
-        .app-header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
-            border-bottom: 1px solid #eef2f6;
-            padding-bottom: 16px;
-        }
-        .app-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #0b1a33;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .app-title small {
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: #6b7a8f;
-            margin-left: 6px;
-        }
-        .token-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f0f4fe;
-            padding: 6px 16px 6px 20px;
-            border-radius: 60px;
-            flex-wrap: wrap;
-        }
-        .token-section label {
-            font-weight: 500;
-            color: #1a2b44;
-            font-size: 0.9rem;
-        }
-        .token-section input {
-            border: none;
-            background: white;
-            padding: 8px 16px;
-            border-radius: 40px;
-            width: 220px;
-            font-size: 0.9rem;
-            outline: 1px solid #d9e0e8;
-        }
-        .token-section input:focus {
-            outline: 2px solid #2d6ff7;
-        }
-        .token-section button {
-            background: #1e2f4a;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-weight: 500;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .token-section button:hover {
-            background: #0f1e33;
-        }
-        .token-status {
-            font-size: 0.8rem;
-            padding: 4px 14px;
-            border-radius: 30px;
-            background: #e3f5eb;
-            color: #1e7b4b;
-        }
-        .token-status.error {
-            background: #fde8e8;
-            color: #b33;
-        }
-        .token-status.loading {
-            background: #fff3cd;
-            color: #856404;
-        }
-        .token-status.saved {
-            background: #d5f0e0;
-            color: #0b5532;
-        }
-        .mode-tabs {
-            display: flex;
-            gap: 12px;
-            margin: 20px 0 24px;
-            border-bottom: 2px solid #eef2f6;
-            padding-bottom: 6px;
-        }
-        .mode-tab {
-            padding: 10px 28px;
-            border-radius: 40px;
-            font-weight: 600;
-            background: transparent;
-            border: none;
-            color: #5d6f83;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .mode-tab.active {
-            background: #0b1a33;
-            color: white;
-        }
-        .mode-tab i {
-            margin-right: 8px;
-        }
-        .dept-tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px 8px;
-            margin: 6px 0 18px;
-            padding: 4px 0 10px;
-            border-bottom: 1px dashed #dfe6ef;
-        }
-        .dept-tab {
-            background: white;
-            border: 1px solid #d4dce8;
-            padding: 5px 14px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #1f334a;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .dept-tab .count-badge {
-            background: #2d6ff7;
-            color: white;
-            border-radius: 20px;
-            padding: 0 8px;
-            font-size: 0.65rem;
-            margin-left: 4px;
-            font-weight: 600;
-        }
-        .dept-tab.active {
-            background: #1f334a;
-            border-color: #1f334a;
-            color: white;
-        }
-        .dept-tab.active .count-badge {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        .dept-tab:hover {
-            background: #e9eff7;
-        }
-        .dept-tab.active:hover {
-            background: #142433;
-        }
-        @media (max-width: 600px) {
-            .dept-tabs {
-                gap: 4px 6px;
-            }
-            .dept-tab {
-                font-size: 0.7rem;
-                padding: 4px 10px;
-            }
-            .dept-tab .count-badge {
-                font-size: 0.6rem;
-                padding: 0 6px;
-            }
-        }
-        .summary-stats {
-            background: #f8faff;
-            padding: 12px 20px;
-            border-radius: 60px;
-            display: inline-block;
-            margin-bottom: 18px;
-            font-weight: 500;
-            color: #10304b;
-            border: 1px solid #e0e8f2;
-        }
-        .summary-stats i {
-            margin-right: 10px;
-            color: #2d6ff7;
-        }
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 18px;
-            margin-top: 10px;
-        }
-        .task-card {
-            background: white;
-            border-radius: 20px;
-            padding: 18px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.02), 0 0 0 1px #eef2f6;
-            border-left: 4px solid #d0dae8;
-        }
-        .task-card .card-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #0b1e30;
-            margin-bottom: 8px;
-        }
-        .task-card .card-meta {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px 14px;
-            font-size: 0.85rem;
-            color: #2a405c;
-            margin-top: 6px;
-        }
-        .badge-progress {
-            padding: 3px 14px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .badge-green {
-            background: #d5f0e0;
-            color: #0b5532;
-        }
-        .badge-red {
-            background: #ffe4e4;
-            color: #b13a3a;
-        }
-        .badge-urgent {
-            background: #ffd9b3;
-            color: #944d0c;
-        }
-        .badge-normal {
-            background: #e6edf6;
-            color: #1f3d5c;
-        }
-        .card-actions {
-            margin-top: 12px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 6px;
-            border-top: 1px solid #f0f4fa;
-            padding-top: 10px;
-        }
-        .card-actions button {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 0.85rem;
-            padding: 4px 12px;
-            border-radius: 30px;
-        }
-        .delete-btn {
-            color: #b0c0d0;
-        }
-        .delete-btn:hover {
-            background: #fee9e9;
-            color: #b33;
-        }
-        .edit-btn {
-            color: #6b8bb0;
-        }
-        .edit-btn:hover {
-            background: #e9eff7;
-            color: #1f4a7a;
-        }
-        .add-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: #eef3fc;
-            border: 1px dashed #8aa1c0;
-            padding: 8px 22px;
-            border-radius: 60px;
-            font-weight: 500;
-            color: #1a3457;
-            cursor: pointer;
-            margin: 12px 0 4px;
-        }
-        .add-btn:hover {
-            background: #dfe9f7;
-            border-color: #2d6ff7;
-        }
-        .dept-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .hidden {
-            display: none !important;
-        }
-        .work-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 20px;
-            margin-top: 10px;
-        }
-        .work-card {
-            background: #fafcff;
-            border-radius: 20px;
-            padding: 20px 22px;
-            box-shadow: 0 0 0 1px #e6edf6;
-            transition: 0.15s;
-        }
-        .work-card:hover {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 0 0 1px #d0dce8;
-        }
-        .work-card .work-title {
-            font-size: 1.0rem;
-            font-weight: 600;
-            color: #0b1e30;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .work-card .work-title i {
-            color: #2d6ff7;
-            font-size: 1.0rem;
-        }
-        .work-card .work-month-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            background: #f0f6fe;
-            padding: 8px 16px 8px 18px;
-            border-radius: 60px;
-            margin-bottom: 8px;
-        }
-        .work-card .work-month-row label {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #1a3457;
-        }
-        .work-card .work-month-row input[type="month"] {
-            border: none;
-            background: white;
-            padding: 6px 12px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            outline: 1px solid #d4dce8;
-            flex: 1;
-            min-width: 140px;
-        }
-        .work-card .work-month-row input[type="month"]:focus {
-            outline: 2px solid #2d6ff7;
-        }
-        .work-card .work-month-row .save-month-btn {
-            background: #1e2f4a;
-            color: white;
-            border: none;
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        .work-card .work-month-row .save-month-btn:hover {
-            background: #0f1e33;
-        }
-        .work-card .work-month-row .month-status {
-            font-size: 0.75rem;
-            color: #1e7b4b;
-            margin-left: 4px;
-        }
-        .work-card .work-note-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            padding: 4px 16px 4px 18px;
-        }
-        .work-card .work-note-row label {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #4a6885;
-        }
-        .work-card .work-note-row input {
-            border: 1px solid #d4dce8;
-            background: white;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            flex: 1;
-            min-width: 120px;
-            outline: none;
-        }
-        .work-card .work-note-row input:focus {
-            outline: 2px solid #2d6ff7;
-        }
-        .work-card .work-note-row .save-note-btn {
-            background: #6b8bb0;
-            color: white;
-            border: none;
-            padding: 4px 16px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        .work-card .work-note-row .save-note-btn:hover {
-            background: #1f4a7a;
-        }
-        .work-card .work-note-row .note-status {
-            font-size: 0.7rem;
-            color: #1e7b4b;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            visibility: hidden;
-            opacity: 0;
-            transition: 0.15s;
-        }
-        .modal-overlay.show {
-            visibility: visible;
-            opacity: 1;
-        }
-        .modal-box {
-            background: white;
-            max-width: 440px;
-            width: 90%;
-            padding: 28px 30px;
-            border-radius: 40px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
-        }
-        .modal-box h3 {
-            margin-bottom: 18px;
-            font-size: 1.3rem;
-        }
-        .modal-box label {
-            display: block;
-            margin: 12px 0 4px;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        .modal-box input,
-        .modal-box select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #d4dce8;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            background: #fafcff;
-        }
-        .modal-box .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-            justify-content: flex-end;
-        }
-        .modal-box .modal-actions button {
-            padding: 10px 28px;
-            border: none;
-            border-radius: 60px;
-            font-weight: 500;
-            background: #eef2f6;
-            cursor: pointer;
-        }
-        .modal-box .modal-actions .btn-primary {
-            background: #0b1a33;
-            color: white;
-        }
-        .modal-box .modal-actions .btn-primary:hover {
-            background: #1a3050;
-        }
-        .loading-spinner {
-            text-align: center;
-            padding: 40px 0;
-            color: #6b7a8f;
-        }
-        .loading-spinner i {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            display: block;
-        }
-        @media (max-width: 600px) {
-            .app-container {
-                padding: 16px;
-            }
-            .token-section {
-                flex-wrap: wrap;
-            }
-            .token-section input {
-                width: 100%;
-            }
-            .work-grid {
-                grid-template-columns: 1fr;
-            }
-            .work-card .work-month-row {
-                flex-wrap: wrap;
-            }
-            .work-card .work-note-row {
-                flex-wrap: wrap;
-            }
-        }
+        /* ===== 樣式與之前相同，省略節省空間 ===== */
+        * { margin:0; padding:0; box-sizing:border-box; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+        body { background:#f0f4fc; min-height:100vh; padding:20px; display:flex; justify-content:center; }
+        .app-container { max-width:1300px; width:100%; background:white; border-radius:32px; padding:24px 28px 40px; box-shadow:0 20px 40px rgba(0,0,0,0.06); }
+        .app-header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:18px; border-bottom:1px solid #eef2f6; padding-bottom:16px; }
+        .app-title { font-size:2.2rem; font-weight:700; color:#0b1a33; display:flex; align-items:center; gap:8px; }
+        .app-title small { font-size:0.9rem; font-weight:400; color:#6b7a8f; margin-left:6px; }
+        .token-section { display:flex; align-items:center; gap:12px; background:#f0f4fe; padding:6px 16px 6px 20px; border-radius:60px; flex-wrap:wrap; }
+        .token-section label { font-weight:500; color:#1a2b44; font-size:0.9rem; }
+        .token-section input { border:none; background:white; padding:8px 16px; border-radius:40px; width:220px; font-size:0.9rem; outline:1px solid #d9e0e8; }
+        .token-section input:focus { outline:2px solid #2d6ff7; }
+        .token-section button { background:#1e2f4a; color:white; border:none; padding:8px 20px; border-radius:40px; font-weight:500; cursor:pointer; font-size:0.9rem; }
+        .token-section button:hover { background:#0f1e33; }
+        .token-status { font-size:0.8rem; padding:4px 14px; border-radius:30px; background:#e3f5eb; color:#1e7b4b; }
+        .token-status.error { background:#fde8e8; color:#b33; }
+        .token-status.loading { background:#fff3cd; color:#856404; }
+        .token-status.saved { background:#d5f0e0; color:#0b5532; }
+        .mode-tabs { display:flex; gap:12px; margin:20px 0 24px; border-bottom:2px solid #eef2f6; padding-bottom:6px; }
+        .mode-tab { padding:10px 28px; border-radius:40px; font-weight:600; background:transparent; border:none; color:#5d6f83; cursor:pointer; font-size:1rem; }
+        .mode-tab.active { background:#0b1a33; color:white; }
+        .mode-tab i { margin-right:8px; }
+        .dept-tabs { display:flex; flex-wrap:wrap; gap:6px 8px; margin:6px 0 18px; padding:4px 0 10px; border-bottom:1px dashed #dfe6ef; }
+        .dept-tab { background:white; border:1px solid #d4dce8; padding:5px 14px; border-radius:40px; font-size:0.8rem; font-weight:500; color:#1f334a; cursor:pointer; white-space:nowrap; }
+        .dept-tab .count-badge { background:#2d6ff7; color:white; border-radius:20px; padding:0 8px; font-size:0.65rem; margin-left:4px; font-weight:600; }
+        .dept-tab.active { background:#1f334a; border-color:#1f334a; color:white; }
+        .dept-tab.active .count-badge { background:rgba(255,255,255,0.3); }
+        .dept-tab:hover { background:#e9eff7; }
+        .dept-tab.active:hover { background:#142433; }
+        @media (max-width:600px) { .dept-tabs { gap:4px 6px; } .dept-tab { font-size:0.7rem; padding:4px 10px; } .dept-tab .count-badge { font-size:0.6rem; padding:0 6px; } }
+        .summary-stats { background:#f8faff; padding:12px 20px; border-radius:60px; display:inline-block; margin-bottom:18px; font-weight:500; color:#10304b; border:1px solid #e0e8f2; }
+        .summary-stats i { margin-right:10px; color:#2d6ff7; }
+        .card-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:18px; margin-top:10px; }
+        .task-card { background:white; border-radius:20px; padding:18px; box-shadow:0 6px 18px rgba(0,0,0,0.02), 0 0 0 1px #eef2f6; border-left:4px solid #d0dae8; }
+        .task-card .card-title { font-weight:600; font-size:1.1rem; color:#0b1e30; margin-bottom:8px; }
+        .task-card .card-meta { display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; font-size:0.85rem; color:#2a405c; margin-top:6px; }
+        .badge-progress { padding:3px 14px; border-radius:40px; font-size:0.75rem; font-weight:600; }
+        .badge-green { background:#d5f0e0; color:#0b5532; }
+        .badge-red { background:#ffe4e4; color:#b13a3a; }
+        .badge-urgent { background:#ffd9b3; color:#944d0c; }
+        .badge-normal { background:#e6edf6; color:#1f3d5c; }
+        .card-actions { margin-top:12px; display:flex; justify-content:flex-end; gap:6px; border-top:1px solid #f0f4fa; padding-top:10px; }
+        .card-actions button { background:transparent; border:none; cursor:pointer; font-size:0.85rem; padding:4px 12px; border-radius:30px; }
+        .delete-btn { color:#b0c0d0; }
+        .delete-btn:hover { background:#fee9e9; color:#b33; }
+        .edit-btn { color:#6b8bb0; }
+        .edit-btn:hover { background:#e9eff7; color:#1f4a7a; }
+        .add-btn { display:inline-flex; align-items:center; gap:6px; background:#eef3fc; border:1px dashed #8aa1c0; padding:8px 22px; border-radius:60px; font-weight:500; color:#1a3457; cursor:pointer; margin:12px 0 4px; }
+        .add-btn:hover { background:#dfe9f7; border-color:#2d6ff7; }
+        .dept-header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+        .hidden { display:none !important; }
+        .work-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(340px,1fr)); gap:20px; margin-top:10px; }
+        .work-card { background:#fafcff; border-radius:20px; padding:20px 22px; box-shadow:0 0 0 1px #e6edf6; transition:0.15s; }
+        .work-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.04), 0 0 0 1px #d0dce8; }
+        .work-card .work-title { font-size:1.0rem; font-weight:600; color:#0b1e30; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+        .work-card .work-title i { color:#2d6ff7; font-size:1.0rem; }
+        .work-card .work-month-row { display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:#f0f6fe; padding:8px 16px 8px 18px; border-radius:60px; margin-bottom:8px; }
+        .work-card .work-month-row label { font-size:0.85rem; font-weight:500; color:#1a3457; }
+        .work-card .work-month-row input[type="month"] { border:none; background:white; padding:6px 12px; border-radius:30px; font-size:0.85rem; outline:1px solid #d4dce8; flex:1; min-width:140px; }
+        .work-card .work-month-row input[type="month"]:focus { outline:2px solid #2d6ff7; }
+        .work-card .work-month-row .save-month-btn { background:#1e2f4a; color:white; border:none; padding:6px 18px; border-radius:40px; font-size:0.8rem; cursor:pointer; font-weight:500; white-space:nowrap; }
+        .work-card .work-month-row .save-month-btn:hover { background:#0f1e33; }
+        .work-card .work-month-row .month-status { font-size:0.75rem; color:#1e7b4b; margin-left:4px; }
+        .work-card .work-note-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:4px 16px 4px 18px; }
+        .work-card .work-note-row label { font-size:0.8rem; font-weight:500; color:#4a6885; }
+        .work-card .work-note-row input { border:1px solid #d4dce8; background:white; padding:4px 12px; border-radius:30px; font-size:0.8rem; flex:1; min-width:120px; outline:none; }
+        .work-card .work-note-row input:focus { outline:2px solid #2d6ff7; }
+        .work-card .work-note-row .save-note-btn { background:#6b8bb0; color:white; border:none; padding:4px 16px; border-radius:40px; font-size:0.7rem; cursor:pointer; font-weight:500; white-space:nowrap; }
+        .work-card .work-note-row .save-note-btn:hover { background:#1f4a7a; }
+        .work-card .work-note-row .note-status { font-size:0.7rem; color:#1e7b4b; }
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.25); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:999; visibility:hidden; opacity:0; transition:0.15s; }
+        .modal-overlay.show { visibility:visible; opacity:1; }
+        .modal-box { background:white; max-width:440px; width:90%; padding:28px 30px; border-radius:40px; box-shadow:0 30px 60px rgba(0,0,0,0.2); }
+        .modal-box h3 { margin-bottom:18px; font-size:1.3rem; }
+        .modal-box label { display:block; margin:12px 0 4px; font-weight:500; font-size:0.9rem; }
+        .modal-box input, .modal-box select { width:100%; padding:10px 14px; border:1px solid #d4dce8; border-radius:20px; font-size:0.9rem; background:#fafcff; }
+        .modal-box .modal-actions { display:flex; gap:12px; margin-top:24px; justify-content:flex-end; }
+        .modal-box .modal-actions button { padding:10px 28px; border:none; border-radius:60px; font-weight:500; background:#eef2f6; cursor:pointer; }
+        .modal-box .modal-actions .btn-primary { background:#0b1a33; color:white; }
+        .modal-box .modal-actions .btn-primary:hover { background:#1a3050; }
+        .loading-spinner { text-align:center; padding:40px 0; color:#6b7a8f; }
+        .loading-spinner i { font-size:2rem; margin-bottom:12px; display:block; }
+        @media (max-width:600px) { .app-container { padding:16px; } .token-section { flex-wrap:wrap; } .token-section input { width:100%; } .work-grid { grid-template-columns:1fr; } .work-card .work-month-row { flex-wrap:wrap; } .work-card .work-note-row { flex-wrap:wrap; } }
     </style>
 </head>
 <body>
@@ -554,7 +118,7 @@
 
         <div id="progressSection" class="hidden">
             <div class="dept-tabs" id="progressDeptTabs"></div>
-            <div style="margin: 10px 0 16px; color:#4a6885; font-size:0.9rem;">
+            <div style="margin:10px 0 16px; color:#4a6885; font-size:0.9rem;">
                 <i class="fas fa-info-circle"></i> 每個部門固定工作項目，可修改處理進度月份與備註
             </div>
             <div class="work-grid" id="progressGrid"></div>
@@ -608,19 +172,9 @@
         const DELETE_PASSWORD = 'yuki';
         const STORAGE_KEY = 'fhac_github_token';
 
-        // ================================================================
-        //  部門列表（會計部僅備忘錄，工作進度不顯示）
-        // ================================================================
         const DEPARTMENTS = ['會計部', '總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
-
-        // ================================================================
-        //  工作進度部門列表（不含會計部）
-        // ================================================================
         const PROGRESS_DEPARTMENTS = ['總會', '創藝', '寶利', '康盈', '怡樂', '朗程', '寶翠', '青濤', '心悅', '喜悅', '欣悅', '樂膳'];
 
-        // ================================================================
-        //  各部門固定工作項目
-        // ================================================================
         const WORK_ITEMS_BY_DEPT = {
             '總會': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
@@ -643,17 +197,13 @@
                 { id: 'work3', name: '服務使用者津貼應付表核對' },
                 { id: 'work4', name: '服務使用者戶口核對' }
             ],
-            '康盈': [
-                { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
-            ],
+            '康盈': [{ id: 'work1', name: '收據核對及檢視是否已存入銀行' }],
             '怡樂': [
                 { id: 'work1', name: '收據核對及檢視是否已存入銀行' },
                 { id: 'work2', name: '服務使用者津貼應付表核對' },
                 { id: 'work3', name: '服務使用者戶口核對' }
             ],
-            '朗程': [
-                { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
-            ],
+            '朗程': [{ id: 'work1', name: '收據核對及檢視是否已存入銀行' }],
             '寶翠': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' },
@@ -670,9 +220,7 @@
                 { id: 'work1', name: '發票核實及檢視收款情況' },
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
             ],
-            '喜悅': [
-                { id: 'work1', name: '收據核對及檢視是否已存入銀行' }
-            ],
+            '喜悅': [{ id: 'work1', name: '收據核對及檢視是否已存入銀行' }],
             '欣悅': [
                 { id: 'work1', name: '發票核實及檢視收款情況' },
                 { id: 'work2', name: '收據核對及檢視是否已存入銀行' }
@@ -754,7 +302,8 @@
         //  GitHub API
         // ================================================================
         async function fetchDataFromGitHub(token) {
-            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' + BRANCH;
+            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' +
+                BRANCH;
             var resp = await fetch(url, {
                 headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
             });
@@ -772,7 +321,8 @@
         }
 
         async function saveDataToGitHub(token, data, sha) {
-            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' + BRANCH;
+            var url = 'https://api.github.com/repos/' + GITHUB_USER + '/' + GITHUB_REPO + '/contents/' + DATA_FILE + '?ref=' +
+                BRANCH;
             var jsonStr = JSON.stringify(data, null, 2);
             var encoder = new TextEncoder();
             var bytes = encoder.encode(jsonStr);
@@ -818,7 +368,8 @@
                             });
                             if (!retryResp.ok) {
                                 var retryErr = await retryResp.json().catch(function() { return {}; });
-                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp.statusText));
+                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp
+                                .statusText));
                             }
                             var result = await retryResp.json();
                             return result.content.sha;
@@ -835,7 +386,8 @@
                             });
                             if (!retryResp.ok) {
                                 var retryErr = await retryResp.json().catch(function() { return {}; });
-                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp.statusText));
+                                throw new Error('儲存失敗 (' + retryResp.status + '): ' + (retryErr.message || retryResp
+                                .statusText));
                             }
                             var result = await retryResp.json();
                             return result.content.sha;
@@ -851,10 +403,12 @@
         }
 
         // ================================================================
-        //  核心資料載入 / 儲存
+        //  核心資料載入 / 儲存（增加強制刷新）
         // ================================================================
-        async function loadData(token) {
-            setStatus('<i class="fas fa-spinner fa-pulse"></i> 載入中...', 'loading');
+        async function loadData(token, showStatus) {
+            if (showStatus !== false) {
+                setStatus('<i class="fas fa-spinner fa-pulse"></i> 載入中...', 'loading');
+            }
             try {
                 var result = await fetchDataFromGitHub(token);
                 if (result === null) {
@@ -871,7 +425,9 @@
                             workProgressData[dept][items[w].id] = { month: '', note: '' };
                         }
                     }
-                    setStatus('<i class="fas fa-file"></i> 新檔案已建立', '');
+                    if (showStatus !== false) {
+                        setStatus('<i class="fas fa-file"></i> 新檔案已建立', '');
+                    }
                     await saveAllData(token);
                 } else {
                     var parsed = result.content;
@@ -905,12 +461,18 @@
                     for (var key in memoData) {
                         total += memoData[key].length;
                     }
-                    setStatus('<i class="fas fa-check-circle"></i> 已載入 (備忘 ' + total + ' 項)', 'saved');
+                    if (showStatus !== false) {
+                        setStatus('<i class="fas fa-check-circle"></i> 已載入 (備忘 ' + total + ' 項)', 'saved');
+                    }
                 }
                 refreshAll();
+                return true;
             } catch (err) {
                 console.error(err);
-                setStatus('<i class="fas fa-exclamation-circle"></i> ' + err.message, 'error');
+                if (showStatus !== false) {
+                    setStatus('<i class="fas fa-exclamation-circle"></i> ' + err.message, 'error');
+                }
+                return false;
             }
         }
 
@@ -930,7 +492,17 @@
         }
 
         // ================================================================
-        //  渲染：備忘錄
+        //  強制刷新資料（用於刪除後）
+        // ================================================================
+        async function forceReload() {
+            if (githubToken) {
+                await loadData(githubToken, false);
+                refreshAll();
+            }
+        }
+
+        // ================================================================
+        //  渲染函數（與之前相同）
         // ================================================================
         function renderMemoDeptTabs() {
             memoDeptTabs.innerHTML = '';
@@ -1014,9 +586,6 @@
             }
         }
 
-        // ================================================================
-        //  渲染：工作進度（僅顯示 PROGRESS_DEPARTMENTS）
-        // ================================================================
         function renderProgressDeptTabs() {
             progressDeptTabs.innerHTML = '';
             for (var i = 0; i < PROGRESS_DEPARTMENTS.length; i++) {
@@ -1038,14 +607,12 @@
 
         function renderProgressCards() {
             var items = getWorkItemsForDept(currentDept);
-
             if (items.length === 0) {
                 progressGrid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:#7a8aa0; padding:40px 0;">' +
                     '<i class="fas fa-info-circle" style="font-size:1.5rem; display:block; margin-bottom:10px;"></i>' +
                     '此部門暫無工作進度項目</div>';
                 return;
             }
-
             var deptData = workProgressData[currentDept] || {};
             var html = '';
             for (var i = 0; i < items.length; i++) {
@@ -1070,6 +637,7 @@
             }
             progressGrid.innerHTML = html;
 
+            // 儲存月份
             var monthBtns = progressGrid.querySelectorAll('.save-month-btn');
             for (var j = 0; j < monthBtns.length; j++) {
                 monthBtns[j].addEventListener('click', async function() {
@@ -1100,6 +668,7 @@
                 });
             }
 
+            // 儲存備註
             var noteBtns = progressGrid.querySelectorAll('.save-note-btn');
             for (var k = 0; k < noteBtns.length; k++) {
                 noteBtns[k].addEventListener('click', async function() {
@@ -1125,6 +694,7 @@
                 });
             }
 
+            // Enter 觸發
             var monthInputs = progressGrid.querySelectorAll('.work-month-input');
             for (var m = 0; m < monthInputs.length; m++) {
                 monthInputs[m].addEventListener('keydown', function(e) {
@@ -1147,9 +717,6 @@
             }
         }
 
-        // ================================================================
-        //  統一刷新
-        // ================================================================
         function refreshAll() {
             renderMemoDeptTabs();
             renderMemoCards();
@@ -1209,8 +776,8 @@
                     if (memoData[editTarget.dept][i].id === editTarget.item.id) { idx = i; break; }
                 }
                 if (idx !== -1) {
-                    memoData[editTarget.dept][idx] = { id: editTarget.item.id, name: name, progress: progress, note: note || '',
-                        status: status };
+                    memoData[editTarget.dept][idx] = { id: editTarget.item.id, name: name, progress: progress, note: note ||
+                            '', status: status };
                 }
                 editTarget = null;
             } else {
@@ -1223,7 +790,7 @@
         });
 
         // ================================================================
-        //  刪除
+        //  刪除（已修復：刪除前強制刷新，刪除後重新載入）
         // ================================================================
         document.getElementById('deleteModalCancel').addEventListener('click', function() {
             deleteModal.classList.remove('show');
@@ -1231,21 +798,75 @@
         });
 
         document.getElementById('deleteModalConfirm').addEventListener('click', async function() {
-            if (deletePassword.value.trim() !== DELETE_PASSWORD) { alert('密碼錯誤'); return; }
-            if (!deleteTarget) return;
-            if (deleteTarget.type === 'memo') {
-                for (var dept in memoData) {
-                    var newArr = [];
-                    for (var i = 0; i < memoData[dept].length; i++) {
-                        if (memoData[dept][i].id !== deleteTarget.id) newArr.push(memoData[dept][i]);
-                    }
-                    memoData[dept] = newArr;
-                }
-                await saveAllData(githubToken);
-                refreshAll();
+            var pwd = deletePassword.value.trim();
+            if (pwd !== DELETE_PASSWORD) {
+                alert('❌ 密碼錯誤！');
+                deletePassword.value = '';
+                return;
             }
-            deleteModal.classList.remove('show');
-            deleteTarget = null;
+            if (!deleteTarget) {
+                alert('⚠️ 沒有選取要刪除的項目');
+                deleteModal.classList.remove('show');
+                return;
+            }
+
+            try {
+                // 1. 先強制重新載入最新資料（避免衝突）
+                await forceReload();
+
+                // 2. 再次確認項目是否存在
+                var found = false;
+                if (deleteTarget.type === 'memo') {
+                    for (var dept in memoData) {
+                        for (var i = 0; i < memoData[dept].length; i++) {
+                            if (memoData[dept][i].id === deleteTarget.id) { found = true; break; }
+                        }
+                        if (found) break;
+                    }
+                }
+
+                if (!found) {
+                    alert('⚠️ 該項目可能已被刪除，請重新整理頁面');
+                    deleteModal.classList.remove('show');
+                    deleteTarget = null;
+                    await forceReload();
+                    return;
+                }
+
+                // 3. 執行刪除
+                if (deleteTarget.type === 'memo') {
+                    for (var dept2 in memoData) {
+                        var newArr = [];
+                        for (var i2 = 0; i2 < memoData[dept2].length; i2++) {
+                            if (memoData[dept2][i2].id !== deleteTarget.id) newArr.push(memoData[dept2][i2]);
+                        }
+                        memoData[dept2] = newArr;
+                    }
+                }
+
+                // 4. 儲存到 GitHub
+                var ok = await saveAllData(githubToken);
+
+                if (ok) {
+                    alert('✅ 刪除成功！');
+                } else {
+                    alert('❌ 刪除失敗，請重試');
+                }
+
+                // 5. 關閉彈窗
+                deleteModal.classList.remove('show');
+                deleteTarget = null;
+
+                // 6. 重新載入資料
+                await forceReload();
+
+            } catch (err) {
+                console.error(err);
+                alert('❌ 發生錯誤: ' + err.message);
+                deleteModal.classList.remove('show');
+                deleteTarget = null;
+                await forceReload();
+            }
         });
 
         // ================================================================
@@ -1290,10 +911,7 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入');
-        console.log('📋 會計部：僅備忘錄，工作進度不顯示');
-        console.log('📋 怡樂：3項 (收據+津貼+戶口)');
-        console.log('📋 寶翠：4項 (發票+收據+津貼+戶口)');
-        console.log('📋 青濤：4項 (發票+收據+津貼+戶口)');
+        console.log('🔧 刪除功能已修復：刪除前會強制同步最新資料');
     </script>
 </body>
 </html>
