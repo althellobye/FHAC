@@ -107,30 +107,27 @@
         .update-banner .update-buttons .btn-later:hover { background:rgba(255,255,255,0.25); }
         @media (max-width:600px) { .update-banner { padding:14px 20px; bottom:10px; } .update-banner .update-text { font-size:0.8rem; } .update-banner .update-buttons button { padding:6px 16px; font-size:0.75rem; } }
 
-        /* ===== 新增通知橫幅 ===== */
-        .notification-banner { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#2e7d32; color:white; padding:16px 28px; border-radius:16px; box-shadow:0 8px 32px rgba(46,125,50,0.4); display:flex; align-items:center; gap:16px; z-index:1001; max-width:90%; flex-wrap:wrap; justify-content:center; animation:slideDown 0.5s ease; }
-        .notification-banner .notif-icon { background:rgba(255,255,255,0.2); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
-        .notification-banner .notif-text { font-size:0.95rem; }
+        /* ===== 新增通知橫幅（不會自動消失） ===== */
+        .notification-banner { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#2e7d32; color:white; padding:18px 30px; border-radius:16px; box-shadow:0 8px 32px rgba(46,125,50,0.4); display:flex; align-items:center; gap:16px; z-index:1001; max-width:90%; flex-wrap:wrap; justify-content:center; animation:slideDown 0.5s ease; }
+        .notification-banner .notif-icon { background:rgba(255,255,255,0.2); width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
+        .notification-banner .notif-text { font-size:1rem; }
         .notification-banner .notif-text strong { color:#ffd93d; }
-        .notification-banner .notif-text .small { font-size:0.8rem; opacity:0.8; display:block; margin-top:2px; }
-        .notification-banner .notif-btn { background:#ffd93d; color:#1a2b44; border:none; padding:8px 24px; border-radius:40px; font-weight:600; cursor:pointer; font-size:0.85rem; }
-        .notification-banner .notif-btn:hover { background:#f5c800; }
-        .notification-banner .notif-close { background:transparent; border:none; color:rgba(255,255,255,0.6); font-size:1.2rem; cursor:pointer; padding:0 4px; }
-        .notification-banner .notif-close:hover { color:white; }
-        @keyframes slideDown { from { opacity:0; transform:translateX(-50%) translateY(-20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
-        @media (max-width:600px) { .notification-banner { top:10px; padding:12px 16px; } .notification-banner .notif-text { font-size:0.85rem; } }
+        .notification-banner .notif-text .small { font-size:0.85rem; opacity:0.85; display:block; margin-top:2px; }
+        .notification-banner .notif-btn { background:#ffd93d; color:#1a2b44; border:none; padding:10px 30px; border-radius:40px; font-weight:700; cursor:pointer; font-size:0.95rem; }
+        .notification-banner .notif-btn:hover { background:#f5c800; transform:scale(1.02); }
+        @keyframes slideDown { from { opacity:0; transform:translateX(-50%) translateY(-30px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+        @media (max-width:600px) { .notification-banner { top:10px; padding:14px 18px; } .notification-banner .notif-text { font-size:0.9rem; } .notification-banner .notif-btn { padding:8px 20px; font-size:0.85rem; } }
     </style>
 </head>
 <body>
-    <!-- ===== 新增通知橫幅 ===== -->
+    <!-- ===== 新增通知橫幅（不會自動消失） ===== -->
     <div class="notification-banner" id="notificationBanner" style="display:none;">
         <div class="notif-icon"><i class="fas fa-bell"></i></div>
         <div class="notif-text">
-            <span id="notifMessage"><strong>有新項目！</strong></span>
-            <span class="small" id="notifDetail">點擊「查看」瀏覽新增內容</span>
+            <span id="notifMessage"><strong>📌 有新項目！</strong></span>
+            <span class="small" id="notifDetail">點擊「好的」確認已閱讀</span>
         </div>
-        <button class="notif-btn" id="notifViewBtn">查看</button>
-        <button class="notif-close" id="notifCloseBtn"><i class="fas fa-times"></i></button>
+        <button class="notif-btn" id="notifOkBtn">✅ 好的</button>
     </div>
 
     <!-- ===== 更新提示浮層 ===== -->
@@ -220,13 +217,13 @@
         // ================================================================
         //  🔥 版本號 - 每次更新時只改這裡！ 🔥
         // ================================================================
-        const APP_VERSION = '2026.07.23.001';
+        const APP_VERSION = '2026.07.23.002';
 
         const VERSION_STORAGE_KEY = 'fhac_app_version';
         const LAST_VISIT_KEY = 'fhac_last_visit';
 
         // ================================================================
-        //  新增項目通知功能
+        //  新增項目通知功能（手動關閉）
         // ================================================================
         let pendingNewItems = [];
         let notificationShown = false;
@@ -234,7 +231,6 @@
         function checkForNewItems() {
             var lastVisit = localStorage.getItem(LAST_VISIT_KEY);
             if (!lastVisit) {
-                // 第一次使用，記錄時間但不提示
                 localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
                 return;
             }
@@ -253,26 +249,8 @@
                             newItems.push({
                                 dept: dept,
                                 name: item.name,
-                                time: item.createdAt
-                            });
-                        }
-                    }
-                }
-            }
-
-            // 檢查工作進度項目（如果有新增時間記錄）
-            for (var dept2 in workProgressData) {
-                var items2 = workProgressData[dept2] || {};
-                for (var key in items2) {
-                    var item2 = items2[key];
-                    if (item2 && item2.createdAt) {
-                        var createdTime2 = new Date(item2.createdAt);
-                        if (createdTime2 > lastTime) {
-                            newItems.push({
-                                dept: dept2,
-                                name: key,
-                                time: item2.createdAt,
-                                isWork: true
+                                time: item.createdAt,
+                                type: '備忘錄'
                             });
                         }
                     }
@@ -283,9 +261,6 @@
                 pendingNewItems = newItems;
                 showNotification(newItems.length);
             }
-
-            // 更新最後訪問時間
-            localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
         }
 
         function showNotification(count) {
@@ -295,48 +270,35 @@
 
             if (count === 1) {
                 msg.innerHTML = '<strong>📌 有 1 個新項目</strong>';
-                detail.textContent = '點擊「查看」瀏覽新增內容';
+                detail.textContent = '點擊「好的」確認已閱讀';
             } else {
                 msg.innerHTML = '<strong>📌 有 ' + count + ' 個新項目</strong>';
-                detail.textContent = '點擊「查看」瀏覽新增內容';
+                detail.textContent = '點擊「好的」確認已閱讀';
             }
 
             banner.style.display = 'flex';
             notificationShown = true;
-
-            // 5秒後自動淡出
-            setTimeout(function() {
-                var banner2 = document.getElementById('notificationBanner');
-                if (banner2.style.display !== 'none') {
-                    banner2.style.opacity = '0';
-                    banner2.style.transition = 'opacity 0.5s';
-                    setTimeout(function() {
-                        banner2.style.display = 'none';
-                        banner2.style.opacity = '1';
-                    }, 500);
-                }
-            }, 8000);
         }
 
-        function showNewItemsDetail() {
+        function dismissNotification() {
             var banner = document.getElementById('notificationBanner');
             banner.style.display = 'none';
-
-            if (pendingNewItems.length === 0) {
-                alert('沒有新項目');
-                return;
+            notificationShown = false;
+            
+            // 顯示新增項目清單（可選）
+            if (pendingNewItems.length > 0) {
+                var msg = '📌 新增項目清單：\n\n';
+                for (var i = 0; i < pendingNewItems.length; i++) {
+                    var item = pendingNewItems[i];
+                    msg += '  📝 ' + item.dept + '｜' + item.name + '\n';
+                }
+                msg += '\n✅ 已標記為已讀';
+                alert(msg);
+                pendingNewItems = [];
             }
-
-            var msg = '📌 新增項目清單：\n\n';
-            for (var i = 0; i < pendingNewItems.length; i++) {
-                var item = pendingNewItems[i];
-                var type = item.isWork ? '📊 工作進度' : '📝 備忘錄';
-                msg += '  ' + type + '｜' + item.dept + '｜' + item.name + '\n';
-            }
-            msg += '\n✅ 已標記為已讀';
-
-            alert(msg);
-            pendingNewItems = [];
+            
+            // 更新最後訪問時間
+            localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
         }
 
         // 記錄新增時間
@@ -528,13 +490,8 @@
         // ================================================================
         //  通知事件綁定
         // ================================================================
-        document.getElementById('notifViewBtn').addEventListener('click', function() {
-            showNewItemsDetail();
-        });
-
-        document.getElementById('notifCloseBtn').addEventListener('click', function() {
-            document.getElementById('notificationBanner').style.display = 'none';
-            pendingNewItems = [];
+        document.getElementById('notifOkBtn').addEventListener('click', function() {
+            dismissNotification();
         });
 
         // ================================================================
@@ -1155,7 +1112,7 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入 (v' + APP_VERSION + ')');
-        console.log('🔔 新增項目通知功能已啟用');
+        console.log('🔔 新增項目通知功能已啟用（需手動點擊「好的」關閉）');
     </script>
 </body>
 </html>
