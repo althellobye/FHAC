@@ -196,13 +196,6 @@
     "欣悅": [],
     "樂膳": [
       {
-        "id": "mrxlzjlx2wj0",
-        "name": "测试",
-        "progress": "已完成",
-        "note": "",
-        "status": "正常"
-      },
-      {
         "id": "mrxm0xu8fyfa",
         "name": "测试",
         "progress": "未完成",
@@ -578,5 +571,5 @@
       }
     }
   },
-  "updatedAt": "2026-07-23T14:31:52.400Z"
+  "updatedAt": "2026-07-23T14:36:26.644Z"
 }
