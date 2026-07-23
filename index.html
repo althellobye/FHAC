@@ -106,9 +106,33 @@
         .update-banner .update-buttons .btn-later { background:rgba(255,255,255,0.15); color:white; }
         .update-banner .update-buttons .btn-later:hover { background:rgba(255,255,255,0.25); }
         @media (max-width:600px) { .update-banner { padding:14px 20px; bottom:10px; } .update-banner .update-text { font-size:0.8rem; } .update-banner .update-buttons button { padding:6px 16px; font-size:0.75rem; } }
+
+        /* ===== 新增通知橫幅 ===== */
+        .notification-banner { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#2e7d32; color:white; padding:16px 28px; border-radius:16px; box-shadow:0 8px 32px rgba(46,125,50,0.4); display:flex; align-items:center; gap:16px; z-index:1001; max-width:90%; flex-wrap:wrap; justify-content:center; animation:slideDown 0.5s ease; }
+        .notification-banner .notif-icon { background:rgba(255,255,255,0.2); width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0; }
+        .notification-banner .notif-text { font-size:0.95rem; }
+        .notification-banner .notif-text strong { color:#ffd93d; }
+        .notification-banner .notif-text .small { font-size:0.8rem; opacity:0.8; display:block; margin-top:2px; }
+        .notification-banner .notif-btn { background:#ffd93d; color:#1a2b44; border:none; padding:8px 24px; border-radius:40px; font-weight:600; cursor:pointer; font-size:0.85rem; }
+        .notification-banner .notif-btn:hover { background:#f5c800; }
+        .notification-banner .notif-close { background:transparent; border:none; color:rgba(255,255,255,0.6); font-size:1.2rem; cursor:pointer; padding:0 4px; }
+        .notification-banner .notif-close:hover { color:white; }
+        @keyframes slideDown { from { opacity:0; transform:translateX(-50%) translateY(-20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+        @media (max-width:600px) { .notification-banner { top:10px; padding:12px 16px; } .notification-banner .notif-text { font-size:0.85rem; } }
     </style>
 </head>
 <body>
+    <!-- ===== 新增通知橫幅 ===== -->
+    <div class="notification-banner" id="notificationBanner" style="display:none;">
+        <div class="notif-icon"><i class="fas fa-bell"></i></div>
+        <div class="notif-text">
+            <span id="notifMessage"><strong>有新項目！</strong></span>
+            <span class="small" id="notifDetail">點擊「查看」瀏覽新增內容</span>
+        </div>
+        <button class="notif-btn" id="notifViewBtn">查看</button>
+        <button class="notif-close" id="notifCloseBtn"><i class="fas fa-times"></i></button>
+    </div>
+
     <!-- ===== 更新提示浮層 ===== -->
     <div class="update-banner" id="updateBanner" style="display:none;">
         <div class="update-icon"><i class="fas fa-sync-alt fa-fw"></i></div>
@@ -196,16 +220,132 @@
         // ================================================================
         //  🔥 版本號 - 每次更新時只改這裡！ 🔥
         // ================================================================
-        const APP_VERSION = '2026.07.22.012';
+        const APP_VERSION = '2026.07.23.001';
 
         const VERSION_STORAGE_KEY = 'fhac_app_version';
+        const LAST_VISIT_KEY = 'fhac_last_visit';
 
-        document.addEventListener('DOMContentLoaded', function() {
-            var badge = document.getElementById('versionBadge');
-            if (badge) {
-                badge.textContent = 'v' + APP_VERSION;
+        // ================================================================
+        //  新增項目通知功能
+        // ================================================================
+        let pendingNewItems = [];
+        let notificationShown = false;
+
+        function checkForNewItems() {
+            var lastVisit = localStorage.getItem(LAST_VISIT_KEY);
+            if (!lastVisit) {
+                // 第一次使用，記錄時間但不提示
+                localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
+                return;
             }
-        });
+
+            var lastTime = new Date(lastVisit);
+            var newItems = [];
+
+            // 檢查所有備忘錄項目
+            for (var dept in memoData) {
+                var items = memoData[dept] || [];
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    if (item.createdAt) {
+                        var createdTime = new Date(item.createdAt);
+                        if (createdTime > lastTime) {
+                            newItems.push({
+                                dept: dept,
+                                name: item.name,
+                                time: item.createdAt
+                            });
+                        }
+                    }
+                }
+            }
+
+            // 檢查工作進度項目（如果有新增時間記錄）
+            for (var dept2 in workProgressData) {
+                var items2 = workProgressData[dept2] || {};
+                for (var key in items2) {
+                    var item2 = items2[key];
+                    if (item2 && item2.createdAt) {
+                        var createdTime2 = new Date(item2.createdAt);
+                        if (createdTime2 > lastTime) {
+                            newItems.push({
+                                dept: dept2,
+                                name: key,
+                                time: item2.createdAt,
+                                isWork: true
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (newItems.length > 0 && !notificationShown) {
+                pendingNewItems = newItems;
+                showNotification(newItems.length);
+            }
+
+            // 更新最後訪問時間
+            localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
+        }
+
+        function showNotification(count) {
+            var banner = document.getElementById('notificationBanner');
+            var msg = document.getElementById('notifMessage');
+            var detail = document.getElementById('notifDetail');
+
+            if (count === 1) {
+                msg.innerHTML = '<strong>📌 有 1 個新項目</strong>';
+                detail.textContent = '點擊「查看」瀏覽新增內容';
+            } else {
+                msg.innerHTML = '<strong>📌 有 ' + count + ' 個新項目</strong>';
+                detail.textContent = '點擊「查看」瀏覽新增內容';
+            }
+
+            banner.style.display = 'flex';
+            notificationShown = true;
+
+            // 5秒後自動淡出
+            setTimeout(function() {
+                var banner2 = document.getElementById('notificationBanner');
+                if (banner2.style.display !== 'none') {
+                    banner2.style.opacity = '0';
+                    banner2.style.transition = 'opacity 0.5s';
+                    setTimeout(function() {
+                        banner2.style.display = 'none';
+                        banner2.style.opacity = '1';
+                    }, 500);
+                }
+            }, 8000);
+        }
+
+        function showNewItemsDetail() {
+            var banner = document.getElementById('notificationBanner');
+            banner.style.display = 'none';
+
+            if (pendingNewItems.length === 0) {
+                alert('沒有新項目');
+                return;
+            }
+
+            var msg = '📌 新增項目清單：\n\n';
+            for (var i = 0; i < pendingNewItems.length; i++) {
+                var item = pendingNewItems[i];
+                var type = item.isWork ? '📊 工作進度' : '📝 備忘錄';
+                msg += '  ' + type + '｜' + item.dept + '｜' + item.name + '\n';
+            }
+            msg += '\n✅ 已標記為已讀';
+
+            alert(msg);
+            pendingNewItems = [];
+        }
+
+        // 記錄新增時間
+        function recordItemCreation(item) {
+            if (!item.createdAt) {
+                item.createdAt = new Date().toISOString();
+            }
+            return item;
+        }
 
         // ================================================================
         //  版本檢查與更新
@@ -384,6 +524,18 @@
         const memoNote = $('memoNote');
         const memoStatus = $('memoStatus');
         const deletePassword = $('deletePassword');
+
+        // ================================================================
+        //  通知事件綁定
+        // ================================================================
+        document.getElementById('notifViewBtn').addEventListener('click', function() {
+            showNewItemsDetail();
+        });
+
+        document.getElementById('notifCloseBtn').addEventListener('click', function() {
+            document.getElementById('notificationBanner').style.display = 'none';
+            pendingNewItems = [];
+        });
 
         // ================================================================
         //  Token 儲存
@@ -577,6 +729,12 @@
                     }
                 }
                 refreshAll();
+                
+                // 載入完成後檢查是否有新項目
+                setTimeout(function() {
+                    checkForNewItems();
+                }, 500);
+                
                 return true;
             } catch (err) {
                 console.error(err);
@@ -646,8 +804,9 @@
                 var item = items[i];
                 var progClass = item.progress === '已完成' ? 'badge-red' : 'badge-green';
                 var statClass = item.status === '緊急' ? 'badge-urgent' : 'badge-normal';
-                html += '<div class="task-card" data-id="' + item.id + '">' +
-                    '<div class="card-title">' + escapeHtml(item.name) + '</div>' +
+                var isNew = item.createdAt && new Date(item.createdAt) > new Date(localStorage.getItem(LAST_VISIT_KEY) || 0);
+                html += '<div class="task-card" data-id="' + item.id + '" style="' + (isNew ? 'border-left:4px solid #2e7d32;' : '') + '">' +
+                    '<div class="card-title">' + escapeHtml(item.name) + (isNew ? ' <span style="font-size:0.6rem;background:#2e7d32;color:white;padding:1px 8px;border-radius:30px;margin-left:6px;">NEW</span>' : '') + '</div>' +
                     '<div class="card-meta">' +
                     '<span class="badge-progress ' + progClass + '">' + item.progress + '</span>' +
                     '<span class="badge-progress ' + statClass + '">' + item.status + '</span>';
@@ -857,7 +1016,9 @@
                 editTarget = null;
             } else {
                 if (!memoData[currentDept]) memoData[currentDept] = [];
-                memoData[currentDept].push({ id: genId(), name: name, progress: progress, note: note || '', status: status });
+                var newItem = { id: genId(), name: name, progress: progress, note: note || '', status: status };
+                recordItemCreation(newItem);
+                memoData[currentDept].push(newItem);
             }
             memoModal.classList.remove('show');
             await saveAllData(githubToken);
@@ -994,7 +1155,7 @@
         autoLoad();
 
         console.log('✅ FHAC 看板已載入 (v' + APP_VERSION + ')');
-        console.log('🟢 App Icon 底色為綠色，字體已縮小');
+        console.log('🔔 新增項目通知功能已啟用');
     </script>
 </body>
 </html>
