@@ -112,7 +112,7 @@
       {
         "id": "mrvpiyl5x8zt",
         "name": "朗程軒--淘寶退款",
-        "progress": "已完成",
+        "progress": "未完成",
         "note": "",
         "status": "正常"
       }
@@ -159,7 +159,7 @@
         "id": "mrvmhyp528j7",
         "name": "心悅應收取回進度",
         "progress": "未完成",
-        "note": "2月--Class Salon(未收)",
+        "note": "3月--Class Salon(未收)",
         "status": "正常"
       },
       {
@@ -570,5 +570,5 @@
       }
     }
   },
-  "updatedAt": "2026-08-25T00:51:03.532Z"
+  "updatedAt": "2026-08-25T00:52:44.825Z"
 }
