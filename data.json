@@ -112,7 +112,7 @@
       {
         "id": "mrvpiyl5x8zt",
         "name": "朗程軒--淘寶退款",
-        "progress": "未完成",
+        "progress": "已完成",
         "note": "",
         "status": "正常"
       }
@@ -159,7 +159,7 @@
         "id": "mrvmhyp528j7",
         "name": "心悅應收取回進度",
         "progress": "未完成",
-        "note": "3月--Class Salon(未收)",
+        "note": "2月--Class Salon(未收)",
         "status": "正常"
       },
       {
@@ -182,7 +182,7 @@
         "id": "mrvmkuwx953y",
         "name": "喜悅--搬遷 有否其他注意事項--如保險改地址等",
         "progress": "未完成",
-        "note": "",
+        "note": "Mpay 及中銀需更改地址",
         "status": "正常"
       },
       {
@@ -570,5 +570,5 @@
       }
     }
   },
-  "updatedAt": "2026-08-25T00:52:44.825Z"
+  "updatedAt": "2026-08-25T00:53:07.603Z"
 }
