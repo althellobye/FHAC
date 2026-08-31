@@ -25,13 +25,6 @@
         "status": "正常"
       },
       {
-        "id": "mrvn3vnm3r37",
-        "name": "創藝--結義堂(未取票)",
-        "progress": "已完成",
-        "note": "2025年12月的支票",
-        "status": "正常"
-      },
-      {
         "id": "mrvn7rploi9w",
         "name": "創藝-- 淘寶airmacau(杯)訂金未解決",
         "progress": "未完成",
@@ -556,5 +549,5 @@
       }
     }
   },
-  "updatedAt": "2026-08-31T04:13:46.145Z"
+  "updatedAt": "2026-08-31T04:14:13.275Z"
 }
